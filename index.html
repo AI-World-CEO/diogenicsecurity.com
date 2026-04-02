@@ -1106,6 +1106,46 @@ ul { list-style: none; }
 }
 .footer-copy span { color: var(--text-secondary); }
 
+/* ─── SOUND TOGGLE ─── */
+.sound-toggle {
+  position: absolute;
+  bottom: 28px;
+  right: 28px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sound-btn {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  background: rgba(10, 12, 16, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  cursor: pointer;
+  transition: border-color 0.3s, background 0.3s, transform 0.2s;
+}
+.sound-btn:hover {
+  border-color: var(--accent);
+  background: rgba(0, 212, 170, 0.08);
+  transform: scale(1.08);
+}
+.sound-btn.active { border-color: var(--accent); background: rgba(0, 212, 170, 0.12); }
+.sound-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(0, 212, 170, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: opacity 1s ease;
+  pointer-events: none;
+}
+.sound-hint.hidden { opacity: 0; }
+
 /* ─── MISC ─── */
 ::selection { background: var(--accent); color: var(--bg-primary); }
 ::-webkit-scrollbar { width: 8px; }
@@ -1169,6 +1209,13 @@ ul { list-style: none; }
 <section class="hero" id="hero">
   <div class="hero-canvas" id="heroCanvas3D"></div>
   <div class="hero-overlay"></div>
+  <div class="sound-toggle">
+    <span class="sound-hint" id="soundHint">Sound</span>
+    <button class="sound-btn" id="soundBtn" onclick="toggleXenobotAudio()" aria-label="Enable xenobot audio" title="Enable xenobot audio">
+      <svg id="soundIconOff" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      <svg id="soundIconOn" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+    </button>
+  </div>
   <div class="container">
     <h1 class="hero-headline">Your AI has an immune<br>system now.</h1>
     <p class="hero-sub">Diogenesis monitors what your AI does at runtime and detects when behavior deviates from baseline. Zero dependencies. Pure Python. One command.</p>
@@ -2127,8 +2174,192 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
   dirLight.position.set(5, 10, 5);
   scene.add(dirLight);
 
+  // ── XENOBOT AUDIO SYSTEM ──
+  const xenoAudio = {
+    ctx: null,
+    master: null,
+    heroGain: null,
+    active: false,
+    initialized: false,
+    hum1: null, hum2: null, humLfo: null, humLfoGain: null,
+    proximityOsc: null, proximityGain: null,
+    proximity4Osc: null, proximity4Gain: null,
+    prevPulseUp: [],
+    activeConnections: new Set(),
+    scrollFactor: 1,
+
+    init() {
+      if (this.initialized) return;
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = 0;
+      this.master.connect(this.ctx.destination);
+
+      // Hero scroll volume control
+      this.heroGain = this.ctx.createGain();
+      this.heroGain.gain.value = 1;
+      this.heroGain.connect(this.master);
+
+      // ── Ambient hum ──
+      const humGain = this.ctx.createGain();
+      humGain.gain.value = 0.04;
+      humGain.connect(this.heroGain);
+
+      this.hum1 = this.ctx.createOscillator();
+      this.hum1.type = 'sine';
+      this.hum1.frequency.value = 80;
+      this.hum1.connect(humGain);
+      this.hum1.start();
+
+      this.hum2 = this.ctx.createOscillator();
+      this.hum2.type = 'sine';
+      this.hum2.frequency.value = 120;
+      const hum2Gain = this.ctx.createGain();
+      hum2Gain.gain.value = 0.03;
+      hum2Gain.connect(this.heroGain);
+      this.hum2.connect(hum2Gain);
+      this.hum2.start();
+
+      // LFO breathing on hum volume
+      this.humLfo = this.ctx.createOscillator();
+      this.humLfo.type = 'sine';
+      this.humLfo.frequency.value = 0.1;
+      this.humLfoGain = this.ctx.createGain();
+      this.humLfoGain.gain.value = 0.015;
+      this.humLfo.connect(this.humLfoGain);
+      this.humLfoGain.connect(humGain.gain);
+      this.humLfo.start();
+
+      // ── Proximity harmonics ──
+      this.proximityOsc = this.ctx.createOscillator();
+      this.proximityOsc.type = 'sine';
+      this.proximityOsc.frequency.value = 160;
+      this.proximityGain = this.ctx.createGain();
+      this.proximityGain.gain.value = 0;
+      this.proximityOsc.connect(this.proximityGain);
+      this.proximityGain.connect(this.heroGain);
+      this.proximityOsc.start();
+
+      this.proximity4Osc = this.ctx.createOscillator();
+      this.proximity4Osc.type = 'sine';
+      this.proximity4Osc.frequency.value = 200;
+      this.proximity4Gain = this.ctx.createGain();
+      this.proximity4Gain.gain.value = 0;
+      this.proximity4Osc.connect(this.proximity4Gain);
+      this.proximity4Gain.connect(this.heroGain);
+      this.proximity4Osc.start();
+
+      // Init pulse tracking
+      for (let i = 0; i < xenobots.length; i++) this.prevPulseUp.push(false);
+
+      this.initialized = true;
+    },
+
+    toggle() {
+      if (!this.initialized) this.init();
+      if (this.active) {
+        this.master.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.5);
+        setTimeout(() => { if (!this.active) this.ctx.suspend(); }, 600);
+        this.active = false;
+      } else {
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        this.master.gain.linearRampToValueAtTime(1, this.ctx.currentTime + 0.8);
+        this.active = true;
+      }
+      sessionStorage.setItem('xenoAudioOn', this.active ? '1' : '0');
+    },
+
+    // Called from animation loop
+    update(time, xenobots, connectionCount) {
+      if (!this.active || !this.ctx || this.ctx.state !== 'running') return;
+      const t = this.ctx.currentTime;
+
+      // ── Pulse tones on breathing peaks ──
+      for (let i = 0; i < xenobots.length; i++) {
+        const xb = xenobots[i];
+        const pulseVal = Math.sin(time * xb.pulseSpeed + xb.pulsePhase);
+        const isUp = pulseVal > 0.95;
+        if (isUp && !this.prevPulseUp[i]) {
+          // Breathing peak — trigger a soft tone
+          const freq = 200 + i * 25;
+          const osc = this.ctx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          const g = this.ctx.createGain();
+          g.gain.setValueAtTime(0, t);
+          g.gain.linearRampToValueAtTime(xb.isAlpha ? 0.03 : 0.018, t + 0.05);
+          g.gain.linearRampToValueAtTime(0, t + 0.25);
+          osc.connect(g);
+          g.connect(this.heroGain);
+          osc.start(t);
+          osc.stop(t + 0.3);
+        }
+        this.prevPulseUp[i] = isUp;
+      }
+
+      // ── Proximity harmonics ──
+      let closePairs = connectionCount;
+      const target3 = closePairs >= 2 ? 0.025 : 0;
+      const target4 = closePairs >= 3 ? 0.02 : 0;
+      this.proximityGain.gain.linearRampToValueAtTime(target3, t + 1);
+      this.proximity4Gain.gain.linearRampToValueAtTime(target4, t + 1);
+    },
+
+    // Called when a new tendril connection forms
+    triggerConnection() {
+      if (!this.active || !this.ctx || this.ctx.state !== 'running') return;
+      const t = this.ctx.currentTime;
+      const o1 = this.ctx.createOscillator();
+      const o2 = this.ctx.createOscillator();
+      o1.type = 'sine'; o2.type = 'sine';
+      o1.frequency.value = 220;
+      o2.frequency.value = 330; // perfect fifth
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.025, t + 0.4);
+      g.gain.linearRampToValueAtTime(0, t + 1.5);
+      o1.connect(g); o2.connect(g);
+      g.connect(this.heroGain);
+      o1.start(t); o2.start(t);
+      o1.stop(t + 1.6); o2.stop(t + 1.6);
+    },
+
+    updateScrollVolume() {
+      if (!this.heroGain || !this.ctx) return;
+      const heroEl = document.getElementById('hero');
+      const rect = heroEl.getBoundingClientRect();
+      const inHero = rect.bottom > 0 && rect.top < window.innerHeight;
+      const target = inHero ? 1 : 0.3;
+      if (this.scrollFactor !== target) {
+        this.scrollFactor = target;
+        this.heroGain.gain.linearRampToValueAtTime(target, this.ctx.currentTime + 0.5);
+      }
+    }
+  };
+
+  // Expose toggle globally for the button
+  window.toggleXenobotAudio = function() {
+    xenoAudio.toggle();
+    const btn = document.getElementById('soundBtn');
+    const on = document.getElementById('soundIconOn');
+    const off = document.getElementById('soundIconOff');
+    btn.classList.toggle('active', xenoAudio.active);
+    on.style.display = xenoAudio.active ? 'block' : 'none';
+    off.style.display = xenoAudio.active ? 'none' : 'block';
+  };
+
+  // Fade out sound hint after 3 seconds
+  setTimeout(() => {
+    const hint = document.getElementById('soundHint');
+    if (hint) hint.classList.add('hidden');
+  }, 3000);
+
+  // Scroll volume listener
+  window.addEventListener('scroll', () => { xenoAudio.updateScrollVolume(); });
+
   // ── Animation loop ──
   const clock = new THREE.Clock();
+  let prevTendrilCount = 0;
   function animate() {
     requestAnimationFrame(animate);
     const time = clock.getElapsedTime();
@@ -2186,6 +2417,13 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
       }
     }
     debris.geometry.attributes.position.needsUpdate = true;
+
+    // ── Audio hooks ──
+    if (tendrilIdx > prevTendrilCount) {
+      for (let n = 0; n < tendrilIdx - prevTendrilCount; n++) xenoAudio.triggerConnection();
+    }
+    prevTendrilCount = tendrilIdx;
+    xenoAudio.update(time, xenobots, tendrilIdx);
 
     renderer.render(scene, camera);
   }
