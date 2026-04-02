@@ -312,6 +312,30 @@ ul { list-style: none; }
   transform: translateY(-2px);
 }
 
+.hero-label {
+  margin-top: 40px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(0, 212, 170, 0.5);
+  animation: heroPulse 3s ease-in-out infinite;
+}
+@keyframes heroPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+.hero-scroll {
+  margin-top: 16px;
+  display: inline-block;
+  color: rgba(0, 212, 170, 0.4);
+  animation: heroBounce 2s ease-in-out infinite;
+}
+@keyframes heroBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
 /* ─── PROBLEM ─── */
 .problem { background: var(--bg-secondary); }
 .problem-grid {
@@ -1056,6 +1080,10 @@ ul { list-style: none; }
         View on GitHub
       </a>
     </div>
+    <p class="hero-label">Xenobot security agents — always patrolling</p>
+    <a href="#problem" class="hero-scroll" aria-label="Scroll down">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </a>
   </div>
 </section>
 
