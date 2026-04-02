@@ -1106,6 +1106,57 @@ ul { list-style: none; }
 }
 .footer-copy span { color: var(--text-secondary); }
 
+/* ─── FEEDBACK ─── */
+.feedback-section {
+  background: #12151c;
+  border-top: 1px solid var(--border);
+  padding: 80px 0;
+  text-align: center;
+}
+.feedback-section .section-title { color: var(--accent); }
+.feedback-text {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 580px;
+  margin: 0 auto 36px;
+  line-height: 1.8;
+}
+.feedback-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.feedback-tab {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 900;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 14px 8px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: var(--radius) 0 0 var(--radius);
+  cursor: pointer;
+  transition: background 0.2s, padding 0.2s;
+  text-decoration: none;
+}
+.feedback-tab:hover {
+  background: #33e0be;
+  color: var(--bg-primary);
+  padding: 14px 11px;
+}
+@media (max-width: 768px) {
+  .feedback-tab { display: none; }
+}
+
 /* ─── SOUND TOGGLE ─── */
 .sound-toggle {
   position: absolute;
@@ -1907,6 +1958,22 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
   </div>
 </section>
 
+<!-- ════════════ FEEDBACK ════════════ -->
+<section class="feedback-section" id="feedback">
+  <div class="container">
+    <div class="reveal">
+      <h2 class="section-title">Your opinion means a lot.</h2>
+      <p class="feedback-text">Diogenesis is built by developers for developers. If you have issues, suggestions, or ideas — we want to hear them. Every piece of feedback shapes what we build next.</p>
+      <div class="feedback-buttons">
+        <a href="https://github.com/AI-World-CEO/diogenicsecurity.com/issues" class="btn-primary" target="_blank" rel="noopener">Share Feedback</a>
+        <a href="mailto:prnt3dman1@gmail.com" class="btn-secondary">Email Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<a href="#feedback" class="feedback-tab">Feedback</a>
+
 <!-- ════════════ FOOTER ════════════ -->
 <footer class="footer">
   <div class="container">
@@ -1914,6 +1981,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
       <a href="https://github.com/AI-World-CEO/Prometheus_Prime" target="_blank" rel="noopener">GitHub</a>
       <a href="https://pypi.org/project/diogenesis-sdk/" target="_blank" rel="noopener">PyPI</a>
       <a href="https://github.com/AI-World-CEO/Prometheus_Prime#readme" target="_blank" rel="noopener">Documentation</a>
+      <a href="#feedback">Feedback</a>
       <a href="mailto:garry@diogenicsecurity.com">Contact</a>
     </div>
     <p class="footer-tagline">Behavioral security for the age of autonomous AI.</p>
