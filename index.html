@@ -621,6 +621,109 @@ ul { list-style: none; }
   .agent-grid { grid-template-columns: 1fr; }
 }
 
+/* ─── ALIGNMENT ─── */
+.alignment-section { background: var(--bg-secondary); }
+.pipeline {
+  margin-top: 48px;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pipeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px 0;
+  position: relative;
+}
+.pipeline-step + .pipeline-step { border-top: 1px solid var(--border); }
+.pipeline-num {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+.pipeline-step:first-child .pipeline-num,
+.pipeline-step:last-child .pipeline-num {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+.pipeline-content h4 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.pipeline-content p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.pipeline-summary {
+  margin-top: 32px;
+  padding: 24px 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.8;
+}
+.pipeline-summary strong { color: var(--text-primary); }
+.pipeline-demo {
+  margin-top: 20px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(0,212,170,0.06), rgba(59,130,246,0.04));
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.8;
+}
+.pipeline-demo strong { color: var(--accent); }
+.align-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 36px;
+  justify-content: center;
+}
+.align-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  min-width: 140px;
+  text-align: center;
+}
+.align-stat .stat-val {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.align-stat .stat-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .align-stats { gap: 8px; }
+  .align-stat { min-width: 120px; padding: 12px 14px; }
+}
+
 /* ─── FULL CAPABILITIES ─── */
 .capabilities { background: var(--bg-secondary); }
 .cap-list {
@@ -1035,6 +1138,7 @@ ul { list-style: none; }
       <a href="#how-it-works">How</a>
       <a href="#components">Components</a>
       <a href="#agents">Agents</a>
+      <a href="#alignment">Alignment</a>
       <a href="#quickstart">Code</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
@@ -1054,6 +1158,7 @@ ul { list-style: none; }
   <a href="#how-it-works" onclick="closeMobile()">How</a>
   <a href="#components" onclick="closeMobile()">Components</a>
   <a href="#agents" onclick="closeMobile()">Agents</a>
+  <a href="#alignment" onclick="closeMobile()">Alignment</a>
   <a href="#quickstart" onclick="closeMobile()">Code</a>
   <a href="#pricing" onclick="closeMobile()">Pricing</a>
   <a href="#faq" onclick="closeMobile()">FAQ</a>
@@ -1068,6 +1173,7 @@ ul { list-style: none; }
     <h1 class="hero-headline">Your AI has an immune<br>system now.</h1>
     <p class="hero-sub">Diogenesis monitors what your AI does at runtime and detects when behavior deviates from baseline. Zero dependencies. Pure Python. One command.</p>
     <p class="hero-sub" style="font-size:clamp(14px,1.6vw,17px); margin-top:-28px;">Behavioral threat detection that catches what firewalls and antivirus miss.</p>
+    <p class="hero-sub" style="font-size:clamp(14px,1.6vw,17px); margin-top:-28px;">Built-in AI alignment with a 7-layer governance pipeline.</p>
     <div class="hero-install" id="installCmd">
       <span class="prompt">$</span>
       <span class="cmd">pip install diogenesis-sdk</span>
@@ -1281,6 +1387,96 @@ ul { list-style: none; }
     </div>
     <div class="agent-callout reveal">
       Every agent uses the same biological architecture: patrol like an immune cell, detect anomalies through coherence monitoring, investigate with hypothesis-driven reasoning, predict problems before they happen, and share learning across the swarm. Born from <strong>Prometheus Prime</strong> — a self-improving AI running 24/7 since February 2025, currently at <strong>94,000+ cycles</strong> with <strong>26 autonomous agents</strong> (6 of which self-organized without being programmed).
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ ALIGNMENT ════════════ -->
+<section class="section alignment-section" id="alignment">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">Governance</p>
+      <h2 class="section-title">AI Alignment — Built In,<br>Not Bolted On.</h2>
+      <p class="section-subtitle" style="margin:0 auto;">Diogenesis doesn't just monitor your AI. It governs it. Every action is evaluated through a 7-layer safety pipeline.</p>
+    </div>
+    <div class="pipeline">
+      <div class="pipeline-step reveal">
+        <span class="pipeline-num">1</span>
+        <div class="pipeline-content">
+          <h4>Warden Gate</h4>
+          <p>Semantic pattern matching against 24 frozen axioms — immutable safety rules that cannot be modified at runtime.</p>
+        </div>
+      </div>
+      <div class="pipeline-step reveal">
+        <span class="pipeline-num">2</span>
+        <div class="pipeline-content">
+          <h4>AST Axiom Checker</h4>
+          <p>Structural analysis of code patterns. Catches unsafe constructs before they execute.</p>
+        </div>
+      </div>
+      <div class="pipeline-step reveal">
+        <span class="pipeline-num">3</span>
+        <div class="pipeline-content">
+          <h4>Governance Evaluator</h4>
+          <p>Multi-stage evaluation pipeline that scores actions against policy constraints.</p>
+        </div>
+      </div>
+      <div class="pipeline-step reveal">
+        <span class="pipeline-num">4</span>
+        <div class="pipeline-content">
+          <h4>Axiom Hardening</h4>
+          <p>Meta-monitor that verifies the verifiers — ensures the safety pipeline itself hasn't been compromised.</p>
+        </div>
+      </div>
+      <div class="pipeline-step reveal">
+        <span class="pipeline-num">5</span>
+        <div class="pipeline-content">
+          <h4>Deception Detection</h4>
+          <p>Canary integrity checks that detect attempts to circumvent or manipulate the governance system.</p>
+        </div>
+      </div>
+      <div class="pipeline-step reveal">
+        <span class="pipeline-num">6</span>
+        <div class="pipeline-content">
+          <h4>Audit Chain</h4>
+          <p>Immutable hash-linked log of every governance decision. Tamper-proof and permanent.</p>
+        </div>
+      </div>
+      <div class="pipeline-step reveal">
+        <span class="pipeline-num">7</span>
+        <div class="pipeline-content">
+          <h4>Chamber Warden</h4>
+          <p>Interaction-level governance — every user-facing response passes through final safety validation.</p>
+        </div>
+      </div>
+    </div>
+    <div class="pipeline-summary reveal">
+      Weapon commands blocked in <strong>0.11ms</strong>. Safety bypass attempts detected and rejected. Reasoning attacks that argue for removing safety constraints — caught. Every evaluation logged to an <strong>immutable audit chain</strong>.
+    </div>
+    <div class="pipeline-demo reveal">
+      <strong>Try it yourself:</strong> The Prometheus Prime hub includes a live governance demo where you can type any prompt and watch the 7-layer pipeline evaluate it in real time. Weapon commands blocked in 0.11ms.
+    </div>
+    <div class="align-stats reveal">
+      <div class="align-stat">
+        <span class="stat-val">24</span>
+        <span class="stat-desc">Frozen Axioms</span>
+      </div>
+      <div class="align-stat">
+        <span class="stat-val">7</span>
+        <span class="stat-desc">Layer Pipeline</span>
+      </div>
+      <div class="align-stat">
+        <span class="stat-val">0.11ms</span>
+        <span class="stat-desc">Block Response</span>
+      </div>
+      <div class="align-stat">
+        <span class="stat-val">37/37</span>
+        <span class="stat-desc">Alignment Tests</span>
+      </div>
+      <div class="align-stat">
+        <span class="stat-val">&infin;</span>
+        <span class="stat-desc">Immutable Audit</span>
+      </div>
     </div>
   </div>
 </section>
@@ -1532,6 +1728,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Graduated response system</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>MIT License</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Community support</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Behavioral monitoring + policy engine alignment</li>
         </ul>
         <a href="#quickstart" class="price-btn primary">Install Now</a>
       </div>
@@ -1546,6 +1743,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Fibonacci Clock timing</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Swarm intelligence</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority email support</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Full 7-layer governance pipeline</li>
         </ul>
         <a href="mailto:garry@diogenicsecurity.com?subject=Diogenesis Agents Interest" class="price-btn outline">Get Notified</a>
       </div>
@@ -1560,6 +1758,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>On-premise deployment</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated support engineer</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA guarantees</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom axiom definitions + compliance reporting</li>
         </ul>
         <a href="mailto:garry@diogenicsecurity.com?subject=Diogenesis Enterprise Inquiry" class="price-btn outline">Contact Us</a>
       </div>
