@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diogenesis Security — Behavioral Immune System for AI</title>
+<meta name="description" content="Diogenesis monitors what your AI does at runtime and detects when behavior deviates from baseline. Zero dependencies. Pure Python. One command.">
+<meta name="keywords" content="AI security, behavioral monitoring, runtime security, Python SDK, AI immune system, agent security">
+<meta property="og:title" content="Diogenesis Security — Behavioral Immune System for AI">
+<meta property="og:description" content="Runtime behavioral monitoring for AI applications. Detect anomalies before they become incidents.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://diogenicsecurity.com">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://diogenicsecurity.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── CSS CUSTOM PROPERTIES ─── */
+:root {
+  --bg-primary: #0a0c10;
+  --bg-secondary: #0f1117;
+  --bg-tertiary: #151821;
+  --bg-card: #12141c;
+  --bg-card-hover: #181b25;
+  --bg-code: #0d0f14;
+  --text-primary: #e8eaed;
+  --text-secondary: #9aa0ab;
+  --text-muted: #5f6672;
+  --accent: #00d4aa;
+  --accent-dim: rgba(0, 212, 170, 0.15);
+  --accent-glow: rgba(0, 212, 170, 0.3);
+  --accent-blue: #3b82f6;
+  --accent-blue-dim: rgba(59, 130, 246, 0.12);
+  --accent-amber: #f0b429;
+  --accent-red: #ef4444;
+  --accent-purple: #a78bfa;
+  --border: #1e2230;
+  --border-light: #2a2f3e;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --max-width: 1200px;
+  --nav-height: 72px;
+}
+
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+a:hover { color: #33e0be; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; }
+ul { list-style: none; }
+
+/* ─── UTILITY ─── */
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+.section { padding: 100px 0; }
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+.section-subtitle {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+/* fade-in on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── NAVIGATION ─── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  z-index: 1000;
+  background: rgba(10, 12, 16, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+.nav.scrolled { border-bottom-color: var(--border); background: rgba(10, 12, 16, 0.95); }
+.nav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+.nav-logo svg { flex-shrink: 0; }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.nav-cta:hover {
+  color: var(--bg-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+}
+.hamburger span {
+  width: 24px; height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* mobile nav */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: var(--nav-height); left: 0; right: 0; bottom: 0;
+  background: rgba(10, 12, 16, 0.97);
+  backdrop-filter: blur(20px);
+  z-index: 999;
+  padding: 40px 24px;
+}
+.mobile-menu.open { display: flex; flex-direction: column; gap: 24px; }
+.mobile-menu a {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: var(--nav-height);
+  overflow: hidden;
+}
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero-canvas canvas {
+  width: 100%;
+  height: 100%;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 80%, transparent 0%, var(--bg-primary) 70%);
+  z-index: 1;
+}
+.hero .container {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding-top: 40px;
+  padding-bottom: 80px;
+}
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-secondary);
+  max-width: 640px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+.hero-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  margin-bottom: 36px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--accent);
+  transition: border-color 0.2s;
+}
+.hero-install:hover { border-color: var(--accent); }
+.hero-install .prompt { color: var(--text-muted); user-select: none; }
+.hero-install .cmd { color: var(--accent); user-select: all; }
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  transition: color 0.2s, background 0.2s;
+}
+.copy-btn:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
+.copy-btn.copied { color: var(--accent); }
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: var(--radius);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  color: var(--bg-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px var(--accent-glow);
+}
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.btn-secondary:hover {
+  border-color: var(--text-muted);
+  transform: translateY(-2px);
+}
+
+/* ─── PROBLEM ─── */
+.problem { background: var(--bg-secondary); }
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+}
+.problem-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 28px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.problem-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+.problem-icon {
+  width: 56px; height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.problem-icon.red { background: rgba(239, 68, 68, 0.12); color: var(--accent-red); }
+.problem-icon.amber { background: rgba(240, 180, 41, 0.12); color: var(--accent-amber); }
+.problem-icon.blue { background: var(--accent-blue-dim); color: var(--accent-blue); }
+.problem-card h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.problem-card .gap-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-red);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.problem-card p { color: var(--text-secondary); font-size: 15px; line-height: 1.7; }
+
+@media (max-width: 768px) {
+  .problem-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── HOW IT WORKS ─── */
+.howitworks { position: relative; }
+.flow-diagram {
+  margin-top: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  min-width: 130px;
+  text-align: center;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.flow-node:hover { border-color: var(--accent); transform: translateY(-3px); }
+.flow-node .node-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+.flow-node .node-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+}
+.flow-node .node-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.flow-arrow {
+  color: var(--text-muted);
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.flow-classification {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.flow-classification .class-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.class-known { background: rgba(0, 212, 170, 0.12); color: var(--accent); }
+.class-unexpected { background: rgba(240, 180, 41, 0.12); color: var(--accent-amber); }
+.class-suspicious { background: rgba(239, 68, 68, 0.12); color: var(--accent-red); }
+.flow-response {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.flow-response .resp-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.resp-log { background: rgba(0, 212, 170, 0.12); color: var(--accent); }
+.resp-warn { background: rgba(240, 180, 41, 0.12); color: var(--accent-amber); }
+.resp-alert { background: rgba(239, 68, 68, 0.12); color: var(--accent-red); }
+
+@media (max-width: 768px) {
+  .flow-diagram { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+
+/* ─── COMPONENTS ─── */
+.components { background: var(--bg-secondary); }
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.comp-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.comp-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 40px rgba(0, 212, 170, 0.06);
+}
+.comp-card.premium::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-blue), var(--accent-purple));
+}
+.comp-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-dim);
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+.comp-card.premium .comp-icon {
+  background: linear-gradient(135deg, var(--accent-dim), rgba(59, 130, 246, 0.12));
+}
+.comp-card h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.comp-card p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.comp-stat {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  padding: 4px 12px;
+  background: var(--accent-dim);
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* components grid: 3 on top, 2 centered below */
+.comp-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+.comp-card:nth-child(4),
+.comp-card:nth-child(5) {
+  /* will span in the bottom row */
+}
+@media (min-width: 769px) {
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .comp-card:nth-child(1) { grid-column: 1 / 3; }
+  .comp-card:nth-child(2) { grid-column: 3 / 5; }
+  .comp-card:nth-child(3) { grid-column: 5 / 7; }
+  .comp-card:nth-child(4) { grid-column: 2 / 4; }
+  .comp-card:nth-child(5) { grid-column: 4 / 6; }
+}
+@media (max-width: 768px) {
+  .comp-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── CODE EXAMPLES ─── */
+.code-section { position: relative; }
+.code-tabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 48px;
+  margin-bottom: 0;
+  flex-wrap: wrap;
+}
+.code-tab {
+  padding: 10px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  transition: color 0.2s, background 0.2s;
+}
+.code-tab:hover { color: var(--text-secondary); }
+.code-tab.active {
+  color: var(--accent);
+  background: var(--bg-code);
+  border-color: var(--border-light);
+}
+.code-panel {
+  display: none;
+  background: var(--bg-code);
+  border: 1px solid var(--border-light);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  padding: 28px;
+  position: relative;
+  overflow-x: auto;
+}
+.code-panel.active { display: block; }
+.code-panel pre {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre;
+  overflow-x: auto;
+}
+.code-panel .copy-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+/* syntax highlighting */
+.kw { color: var(--accent); }
+.str { color: var(--accent-amber); }
+.cm { color: var(--text-muted); font-style: italic; }
+.fn { color: var(--accent-blue); }
+.num { color: var(--accent-purple); }
+
+/* ─── FEATURES ─── */
+.features { background: var(--bg-secondary); }
+.feature-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 48px;
+  justify-content: center;
+}
+.feature-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.feature-pill:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.feature-pill svg { color: var(--accent); flex-shrink: 0; }
+
+/* ─── PRICING ─── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+  align-items: start;
+}
+.price-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 28px;
+  transition: border-color 0.3s, transform 0.3s;
+  position: relative;
+}
+.price-card:hover {
+  transform: translateY(-4px);
+}
+.price-card.featured {
+  border-color: var(--accent);
+  box-shadow: 0 0 40px rgba(0, 212, 170, 0.08);
+}
+.price-card.featured::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+.price-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+.price-badge.free { background: var(--accent-dim); color: var(--accent); }
+.price-badge.pro { background: var(--accent-blue-dim); color: var(--accent-blue); }
+.price-badge.ent { background: rgba(167, 139, 250, 0.12); color: var(--accent-purple); }
+.price-card h3 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.price-amount {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.price-amount span { font-size: 16px; color: var(--text-muted); font-weight: 400; }
+.price-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+.price-features {
+  margin-bottom: 28px;
+}
+.price-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.price-features li svg { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+.price-btn {
+  width: 100%;
+  padding: 13px;
+  text-align: center;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: block;
+}
+.price-btn.primary {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+.price-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px var(--accent-glow);
+  color: var(--bg-primary);
+}
+.price-btn.outline {
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+.price-btn.outline:hover {
+  border-color: var(--text-muted);
+  transform: translateY(-2px);
+}
+.coming-soon-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-amber);
+  background: rgba(240, 180, 41, 0.12);
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-left: 8px;
+}
+
+@media (max-width: 768px) {
+  .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+}
+
+/* ─── STATS / SOCIAL PROOF ─── */
+.stats { background: var(--bg-secondary); }
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.stat-card {
+  text-align: center;
+  padding: 32px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.stats-note {
+  text-align: center;
+  margin-top: 36px;
+  font-size: 15px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.stats-note strong { color: var(--text-secondary); font-style: normal; }
+
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── FAQ ─── */
+.faq-list {
+  max-width: 760px;
+  margin: 48px auto 0;
+}
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px 0;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+  transition: color 0.2s;
+}
+.faq-question:hover { color: var(--accent); }
+.faq-icon {
+  width: 24px; height: 24px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.3s, color 0.3s;
+}
+.faq-item.open .faq-icon { transform: rotate(45deg); color: var(--accent); }
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+}
+.faq-item.open .faq-answer { max-height: 300px; }
+.faq-answer p {
+  padding-bottom: 20px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 0;
+  text-align: center;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.footer-links a {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.footer-links a:hover { color: var(--text-primary); }
+.footer-tagline {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.footer-copy {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.footer-copy span { color: var(--text-secondary); }
+
+/* ─── MISC ─── */
+::selection { background: var(--accent); color: var(--bg-primary); }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- ════════════ NAVIGATION ════════════ -->
+<nav class="nav" id="nav">
+  <div class="container">
+    <a href="#" class="nav-logo">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#00d4aa" stroke-width="2"/>
+        <circle cx="16" cy="16" r="6" fill="#00d4aa" opacity="0.3"/>
+        <circle cx="16" cy="16" r="3" fill="#00d4aa"/>
+        <circle cx="16" cy="7" r="2" fill="#00d4aa" opacity="0.5"/>
+        <circle cx="23" cy="12" r="1.5" fill="#00d4aa" opacity="0.4"/>
+        <circle cx="23" cy="21" r="1.5" fill="#00d4aa" opacity="0.4"/>
+        <circle cx="16" cy="25" r="2" fill="#00d4aa" opacity="0.5"/>
+        <circle cx="9" cy="21" r="1.5" fill="#00d4aa" opacity="0.4"/>
+        <circle cx="9" cy="12" r="1.5" fill="#00d4aa" opacity="0.4"/>
+      </svg>
+      Diogenesis
+    </a>
+    <div class="nav-links">
+      <a href="#problem">Why</a>
+      <a href="#how-it-works">How</a>
+      <a href="#components">Components</a>
+      <a href="#quickstart">Code</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/AI-World-CEO/Prometheus_Prime" class="nav-cta" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#problem" onclick="closeMobile()">Why</a>
+  <a href="#how-it-works" onclick="closeMobile()">How</a>
+  <a href="#components" onclick="closeMobile()">Components</a>
+  <a href="#quickstart" onclick="closeMobile()">Code</a>
+  <a href="#pricing" onclick="closeMobile()">Pricing</a>
+  <a href="#faq" onclick="closeMobile()">FAQ</a>
+  <a href="https://github.com/AI-World-CEO/Prometheus_Prime" target="_blank" rel="noopener">GitHub</a>
+</div>
+
+<!-- ════════════ HERO ════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-canvas">
+    <canvas id="heroCanvas"></canvas>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="container">
+    <h1 class="hero-headline">Your AI has an immune<br>system now.</h1>
+    <p class="hero-sub">Diogenesis monitors what your AI does at runtime and detects when behavior deviates from baseline. Zero dependencies. Pure Python. One command.</p>
+    <div class="hero-install" id="installCmd">
+      <span class="prompt">$</span>
+      <span class="cmd">pip install diogenesis-sdk</span>
+      <button class="copy-btn" onclick="copyText('pip install diogenesis-sdk', this)" aria-label="Copy install command">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+    </div>
+    <div class="hero-buttons">
+      <a href="#quickstart" class="btn-primary">Get Started</a>
+      <a href="https://github.com/AI-World-CEO/Prometheus_Prime" class="btn-secondary" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ PROBLEM ════════════ -->
+<section class="section problem" id="problem">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">The Problem</p>
+      <h2 class="section-title">AI agents are autonomous.<br>Your security tools aren't.</h2>
+      <p class="section-subtitle">Traditional security was built for humans clicking buttons, not AI agents making thousands of decisions per second.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card reveal">
+        <div class="problem-icon red">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <h3>Firewalls</h3>
+        <p class="gap-label">Blind spot</p>
+        <p>Block known threats at the network edge. Can't detect when your AI agent decides to escalate its own permissions or access resources outside its intended scope.</p>
+      </div>
+      <div class="problem-card reveal">
+        <div class="problem-icon amber">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Antivirus</h3>
+        <p class="gap-label">Blind spot</p>
+        <p>Signature-based detection matches known malware. An AI agent acting outside its intended scope isn't malware — it's emergent behavior with no signature to match.</p>
+      </div>
+      <div class="problem-card reveal">
+        <div class="problem-icon blue">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Monitoring</h3>
+        <p class="gap-label">Blind spot</p>
+        <p>Tracks CPU, memory, and uptime. Tells you nothing about what your AI is actually doing — which modules it imports, what files it writes, or what connections it makes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ HOW IT WORKS ════════════ -->
+<section class="section howitworks" id="how-it-works">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">How It Works</p>
+      <h2 class="section-title">Behavioral monitoring,<br>not signature matching.</h2>
+      <p class="section-subtitle" style="margin:0 auto;">Diogenesis sits inside your application, observes every action, and reacts when behavior deviates from baseline.</p>
+    </div>
+    <div class="flow-diagram reveal">
+      <div class="flow-node">
+        <div class="node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        </div>
+        <span class="node-label">Runtime Events</span>
+        <span class="node-sub">imports, files, net, proc</span>
+      </div>
+      <span class="flow-arrow">&rarr;</span>
+      <div class="flow-node">
+        <div class="node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <span class="node-label">Interceptors</span>
+        <span class="node-sub">capture &amp; record</span>
+      </div>
+      <span class="flow-arrow">&rarr;</span>
+      <div class="flow-node">
+        <div class="node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <span class="node-label">Classification</span>
+        <div class="flow-classification">
+          <span class="class-tag class-known">KNOWN</span>
+          <span class="class-tag class-unexpected">UNEXPECTED</span>
+          <span class="class-tag class-suspicious">SUSPICIOUS</span>
+        </div>
+      </div>
+      <span class="flow-arrow">&rarr;</span>
+      <div class="flow-node">
+        <div class="node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <span class="node-label">Policy Engine</span>
+        <span class="node-sub">pattern matching</span>
+      </div>
+      <span class="flow-arrow">&rarr;</span>
+      <div class="flow-node">
+        <div class="node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <span class="node-label">Response</span>
+        <div class="flow-response">
+          <span class="resp-tag resp-log">LOG</span>
+          <span class="resp-tag resp-warn">WARN</span>
+          <span class="resp-tag resp-alert">ALERT</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ COMPONENTS ════════════ -->
+<section class="section components" id="components">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">Architecture</p>
+      <h2 class="section-title">Five layers of behavioral defense.</h2>
+      <p class="section-subtitle" style="margin:0 auto;">Inspired by biological immune systems — each component mirrors a defense mechanism found in living organisms.</p>
+    </div>
+    <div class="comp-grid">
+      <!-- Interceptors -->
+      <div class="comp-card reveal">
+        <div class="comp-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <h3>Interceptors</h3>
+        <p>Capture every import, file write, subprocess, and network connection at runtime. Nothing leaves your application unobserved.</p>
+        <span class="comp-stat">4 event classes</span>
+      </div>
+      <!-- Policy Engine -->
+      <div class="comp-card reveal">
+        <div class="comp-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        </div>
+        <h3>Policy Engine</h3>
+        <p>Classify behavioral patterns — exfiltration, privilege escalation, shadow imports — with graduated response levels from LOG to ALERT.</p>
+        <span class="comp-stat">5 threat patterns</span>
+      </div>
+      <!-- Voltage Field -->
+      <div class="comp-card premium reveal">
+        <div class="comp-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>Voltage Field</h3>
+        <p>Track per-module behavioral coherence over time, like bioelectric fields in living tissue. Detect drift before it becomes a threat.</p>
+        <span class="comp-stat">real-time coherence</span>
+      </div>
+      <!-- Fibonacci Clock -->
+      <div class="comp-card premium reveal">
+        <div class="comp-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>Fibonacci Clock</h3>
+        <p>Time system heartbeats at PHI-ratio intervals — 3, 5, 8, 13, 21 cycles. Detect resonance patterns between subsystems that periodic checks miss.</p>
+        <span class="comp-stat">PHI-ratio intervals</span>
+      </div>
+      <!-- Xenobot Agents -->
+      <div class="comp-card premium reveal">
+        <div class="comp-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><circle cx="5" cy="18" r="3"/><circle cx="19" cy="18" r="3"/><line x1="9.5" y1="12.5" x2="6.5" y2="15.5"/><line x1="14.5" y1="12.5" x2="17.5" y2="15.5"/></svg>
+        </div>
+        <h3>Xenobot Agents</h3>
+        <p>Autonomous investigative agents that patrol your system, detect anomalies, and share learning across the swarm — like white blood cells.</p>
+        <span class="comp-stat">swarm intelligence</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ CODE EXAMPLES ════════════ -->
+<section class="section code-section" id="quickstart">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">Quick Start</p>
+      <h2 class="section-title">Three lines to get started.</h2>
+      <p class="section-subtitle" style="margin:0 auto;">Install. Import. Monitor. Diogenesis starts protecting your application immediately.</p>
+    </div>
+    <div class="reveal">
+      <div class="code-tabs">
+        <button class="code-tab active" onclick="switchTab(0)">Quick Start</button>
+        <button class="code-tab" onclick="switchTab(1)">Voltage Field</button>
+        <button class="code-tab" onclick="switchTab(2)">Threat Detection</button>
+        <button class="code-tab" onclick="switchTab(3)">Xenobot Agent</button>
+      </div>
+
+      <div class="code-panel active" id="panel-0">
+        <button class="copy-btn" onclick="copyCode(0, this)" aria-label="Copy code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+<pre><span class="kw">from</span> diogenesis <span class="kw">import</span> start_monitoring
+
+<span class="cm"># Start behavioral monitoring with one call</span>
+monitor = <span class="fn">start_monitoring</span>()
+
+<span class="cm"># Your AI application runs normally</span>
+<span class="cm"># Diogenesis watches every import, file write,</span>
+<span class="cm"># network connection, and subprocess in the background</span>
+
+<span class="cm"># Check what's been observed</span>
+report = monitor.<span class="fn">get_report</span>()
+<span class="fn">print</span>(report.summary)</pre>
+      </div>
+
+      <div class="code-panel" id="panel-1">
+        <button class="copy-btn" onclick="copyCode(1, this)" aria-label="Copy code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+<pre><span class="kw">from</span> diogenesis <span class="kw">import</span> get_voltage_field
+
+<span class="cm"># Get real-time behavioral coherence data</span>
+field = <span class="fn">get_voltage_field</span>()
+
+<span class="cm"># Check per-module health scores</span>
+<span class="kw">for</span> module, voltage <span class="kw">in</span> field.modules.items():
+    <span class="kw">if</span> voltage.coherence &lt; <span class="num">0.7</span>:
+        <span class="fn">print</span>(<span class="str">f"⚠ {module}: coherence={voltage.coherence}"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="str">f"✓ {module}: stable at {voltage.coherence}"</span>)</pre>
+      </div>
+
+      <div class="code-panel" id="panel-2">
+        <button class="copy-btn" onclick="copyCode(2, this)" aria-label="Copy code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+<pre><span class="kw">from</span> diogenesis <span class="kw">import</span> PolicyEngine
+
+<span class="cm"># The policy engine detects 5 behavioral threat patterns:</span>
+<span class="cm">#   - Data exfiltration (unexpected outbound connections)</span>
+<span class="cm">#   - Privilege escalation (unauthorized permission changes)</span>
+<span class="cm">#   - Shadow imports (loading modules outside baseline)</span>
+<span class="cm">#   - Resource abuse (excessive file/network activity)</span>
+<span class="cm">#   - Behavioral drift (gradual deviation from baseline)</span>
+
+engine = <span class="fn">PolicyEngine</span>()
+engine.<span class="fn">on_threat</span>(<span class="str">"exfiltration"</span>, severity=<span class="str">"ALERT"</span>,
+    callback=<span class="kw">lambda</span> e: <span class="fn">print</span>(<span class="str">f"🚨 Exfiltration detected: {e}"</span>)
+)</pre>
+      </div>
+
+      <div class="code-panel" id="panel-3">
+        <button class="copy-btn" onclick="copyCode(3, this)" aria-label="Copy code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+<pre><span class="kw">from</span> diogenesis <span class="kw">import</span> XenobotSwarm
+
+<span class="cm"># Deploy autonomous investigative agents</span>
+swarm = <span class="fn">XenobotSwarm</span>(agents=<span class="num">5</span>)
+swarm.<span class="fn">deploy</span>()
+
+<span class="cm"># Agents patrol, detect anomalies, and share learning</span>
+<span class="cm"># Like white blood cells in a biological immune system</span>
+
+<span class="cm"># Query swarm intelligence</span>
+threats = swarm.<span class="fn">get_consensus_threats</span>()
+<span class="kw">for</span> threat <span class="kw">in</span> threats:
+    <span class="fn">print</span>(<span class="str">f"[{threat.confidence:.0%}] {threat.description}"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ FEATURES ════════════ -->
+<section class="section features" id="features">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">Features</p>
+      <h2 class="section-title">Built right.</h2>
+    </div>
+    <div class="feature-grid reveal">
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Zero Dependencies
+      </div>
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        104 Tests
+      </div>
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Python 3.8+
+      </div>
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Behavioral Baseline
+      </div>
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Graduated Response
+      </div>
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        5 Threat Patterns
+      </div>
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Biologically Inspired
+      </div>
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        MIT License
+      </div>
+      <div class="feature-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Works with Any AI Framework
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ PRICING ════════════ -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">Pricing</p>
+      <h2 class="section-title">Start free. Scale when ready.</h2>
+      <p class="section-subtitle" style="margin:0 auto;">The core SDK is free and open source forever. Paid tiers add advanced capabilities for teams that need them.</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- Core -->
+      <div class="price-card featured reveal">
+        <span class="price-badge free">Open Source</span>
+        <h3>Diogenesis Core</h3>
+        <div class="price-amount">Free</div>
+        <p class="price-desc">Everything you need to start monitoring AI behavior at runtime.</p>
+        <ul class="price-features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All 4 Interceptor classes</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Voltage Field monitoring</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Policy Engine with 5 patterns</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Graduated response system</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>MIT License</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Community support</li>
+        </ul>
+        <a href="#quickstart" class="price-btn primary">Install Now</a>
+      </div>
+      <!-- Agents -->
+      <div class="price-card reveal">
+        <span class="price-badge pro">Pro</span>
+        <h3>Diogenesis Agents <span class="coming-soon-badge">Coming Soon</span></h3>
+        <div class="price-amount">$49<span>/mo</span></div>
+        <p class="price-desc">Core features plus autonomous investigation and advanced timing.</p>
+        <ul class="price-features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Everything in Core</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Xenobot Swarm agents</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Fibonacci Clock timing</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Swarm intelligence</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority email support</li>
+        </ul>
+        <a href="mailto:garry@diogenicsecurity.com?subject=Diogenesis Agents Interest" class="price-btn outline">Get Notified</a>
+      </div>
+      <!-- Enterprise -->
+      <div class="price-card reveal">
+        <span class="price-badge ent">Enterprise</span>
+        <h3>Diogenesis Enterprise</h3>
+        <div class="price-amount">Custom</div>
+        <p class="price-desc">For teams that need custom topology, dedicated support, and on-premise deployment.</p>
+        <ul class="price-features">
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Everything in Agents</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Custom network topology</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>On-premise deployment</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated support engineer</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SLA guarantees</li>
+        </ul>
+        <a href="mailto:garry@diogenicsecurity.com?subject=Diogenesis Enterprise Inquiry" class="price-btn outline">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ STATS ════════════ -->
+<section class="section stats" id="stats">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">Built on Real Research</p>
+      <h2 class="section-title">Not a prototype. A product.</h2>
+    </div>
+    <div class="stats-grid reveal">
+      <div class="stat-card">
+        <div class="stat-number">104</div>
+        <div class="stat-label">Automated Tests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">0</div>
+        <div class="stat-label">External Dependencies</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">94K+</div>
+        <div class="stat-label">Cycles Tested</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">26</div>
+        <div class="stat-label">Source Files</div>
+      </div>
+    </div>
+    <p class="stats-note reveal">Extracted from <strong>Prometheus Prime</strong>, a self-improving AI system running 24/7 since February 2025.</p>
+  </div>
+</section>
+
+<!-- ════════════ FAQ ════════════ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">FAQ</p>
+      <h2 class="section-title">Common questions.</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What does Diogenesis actually monitor?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Diogenesis intercepts four categories of runtime behavior: module imports (what code your AI loads), file system writes (what data it creates or modifies), network connections (where it communicates), and subprocess execution (what external programs it launches). Every event is logged, classified, and compared against a behavioral baseline.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Does it slow down my application?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Diogenesis is designed for minimal overhead. Interceptors use Python's built-in hooking mechanisms and add negligible latency to individual operations. The Voltage Field and Policy Engine run asynchronously. For most applications, the performance impact is unmeasurable.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How is this different from a firewall?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>A firewall sits at the network boundary and blocks known bad traffic. Diogenesis sits inside your application and monitors behavior. It detects when your AI does something unexpected — like importing a module it's never used before or writing to a directory outside its scope — regardless of whether a firewall would consider that traffic suspicious.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What Python versions are supported?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Diogenesis supports Python 3.8 and above. It's tested against Python 3.8, 3.9, 3.10, 3.11, 3.12, and 3.13. No compilation step or C extensions required — it's pure Python.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Is it really zero dependencies?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Yes. Diogenesis uses only the Python standard library. No requests, no numpy, no third-party packages. This is a deliberate design decision — a security tool should not expand your attack surface. What you install is what you get.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Can I use it in production?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Yes. Diogenesis Core is MIT-licensed and production-ready with 104 automated tests. It was extracted from Prometheus Prime, a system that has been running continuously since February 2025. Start with the free tier in staging, then deploy to production when you're confident in your baseline.</p></div>
+      </div>
+      <div class="faq-item reveal">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How do I get the paid features?
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>The Agents tier (Xenobot Swarm + Fibonacci Clock) is coming soon. Enterprise licensing with custom topology and dedicated support is available now — contact garry@diogenicsecurity.com for details. The Core SDK with Interceptors, Policy Engine, and Voltage Field is free and available today.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-links">
+      <a href="https://github.com/AI-World-CEO/Prometheus_Prime" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://pypi.org/project/diogenesis-sdk/" target="_blank" rel="noopener">PyPI</a>
+      <a href="https://github.com/AI-World-CEO/Prometheus_Prime#readme" target="_blank" rel="noopener">Documentation</a>
+      <a href="mailto:garry@diogenicsecurity.com">Contact</a>
+    </div>
+    <p class="footer-tagline">Behavioral security for the age of autonomous AI.</p>
+    <p class="footer-copy">&copy; 2026 Diogenesis Security. All rights reserved. Built by <span>Garry Anderson</span>.</p>
+  </div>
+</footer>
+
+<!-- ════════════ JAVASCRIPT ════════════ -->
+<script>
+/* ─── HERO CANVAS: ORGANIC CELL ANIMATION ─── */
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles, connections;
+  const PARTICLE_COUNT = 80;
+  const CONNECTION_DIST = 150;
+  const ACCENT = [0, 212, 170];
+
+  function resize() {
+    w = canvas.width = canvas.offsetWidth;
+    h = canvas.height = canvas.offsetHeight;
+  }
+
+  function init() {
+    resize();
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        r: Math.random() * 2.5 + 1,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.01 + Math.random() * 0.02
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECTION_DIST) {
+          const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
+          ctx.strokeStyle = `rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // particles
+    for (const p of particles) {
+      p.pulse += p.pulseSpeed;
+      const glow = 0.3 + Math.sin(p.pulse) * 0.2;
+      const r = p.r + Math.sin(p.pulse) * 0.5;
+
+      // outer glow
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 4);
+      grad.addColorStop(0, `rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},${glow * 0.3})`);
+      grad.addColorStop(1, `rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r * 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // core
+      ctx.fillStyle = `rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},${glow + 0.3})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // move
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // bounce
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); });
+  init();
+  draw();
+})();
+
+/* ─── NAVIGATION ─── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+/* ─── MOBILE MENU ─── */
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('active');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+function closeMobile() {
+  hamburger.classList.remove('active');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ─── SCROLL REVEAL ─── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ─── CODE TABS ─── */
+function switchTab(index) {
+  document.querySelectorAll('.code-tab').forEach((t, i) => t.classList.toggle('active', i === index));
+  document.querySelectorAll('.code-panel').forEach((p, i) => p.classList.toggle('active', i === index));
+}
+
+/* ─── COPY TO CLIPBOARD ─── */
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = origHTML; }, 2000);
+  });
+}
+
+const codeSnippets = [
+  `from diogenesis import start_monitoring\n\n# Start behavioral monitoring with one call\nmonitor = start_monitoring()\n\n# Your AI application runs normally\n# Diogenesis watches every import, file write,\n# network connection, and subprocess in the background\n\n# Check what's been observed\nreport = monitor.get_report()\nprint(report.summary)`,
+  `from diogenesis import get_voltage_field\n\n# Get real-time behavioral coherence data\nfield = get_voltage_field()\n\n# Check per-module health scores\nfor module, voltage in field.modules.items():\n    if voltage.coherence < 0.7:\n        print(f"⚠ {module}: coherence={voltage.coherence}")\n    else:\n        print(f"✓ {module}: stable at {voltage.coherence}")`,
+  `from diogenesis import PolicyEngine\n\n# The policy engine detects 5 behavioral threat patterns:\n#   - Data exfiltration (unexpected outbound connections)\n#   - Privilege escalation (unauthorized permission changes)\n#   - Shadow imports (loading modules outside baseline)\n#   - Resource abuse (excessive file/network activity)\n#   - Behavioral drift (gradual deviation from baseline)\n\nengine = PolicyEngine()\nengine.on_threat("exfiltration", severity="ALERT",\n    callback=lambda e: print(f"🚨 Exfiltration detected: {e}")\n)`,
+  `from diogenesis import XenobotSwarm\n\n# Deploy autonomous investigative agents\nswarm = XenobotSwarm(agents=5)\nswarm.deploy()\n\n# Agents patrol, detect anomalies, and share learning\n# Like white blood cells in a biological immune system\n\n# Query swarm intelligence\nthreats = swarm.get_consensus_threats()\nfor threat in threats:\n    print(f"[{threat.confidence:.0%}] {threat.description}")`
+];
+
+function copyCode(index, btn) {
+  copyText(codeSnippets[index], btn);
+}
+
+/* ─── FAQ ACCORDION ─── */
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const wasOpen = item.classList.contains('open');
+  // close all
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>
