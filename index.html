@@ -2063,8 +2063,9 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
 
   // ── Xenobot class ──
   const XENOBOT_COUNT = isMobile ? 5 : 10;
-  const TEAL = new THREE.Color(0x00d4aa);
-  const BLUE = new THREE.Color(0x3b82f6);
+  const NEON_GREEN = new THREE.Color(0x39FF14);
+  const HOT_ORANGE = new THREE.Color(0xFF6600);
+  const ALPHA_WHITE_GREEN = new THREE.Color(0xAAFFAA);
   const xenobots = [];
 
   class Xenobot {
@@ -2101,8 +2102,8 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
       // Cell cluster: 3-5 overlapping spheres
       const cellCount = isAlpha ? 5 : 3 + Math.floor(Math.random() * 3);
       const baseSize = isAlpha ? 0.45 : 0.25 + Math.random() * 0.2;
-      const useBlue = !isAlpha && Math.random() < 0.3;
-      const color = useBlue ? BLUE : TEAL;
+      const useOrange = !isAlpha && Math.random() < 0.4;
+      const color = isAlpha ? ALPHA_WHITE_GREEN : (useOrange ? HOT_ORANGE : NEON_GREEN);
       this.cells = [];
 
       const segDetail = isMobile ? 8 : 12;
@@ -2113,10 +2114,10 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
         const mat = new THREE.MeshPhongMaterial({
           color: color,
           transparent: true,
-          opacity: isAlpha ? 0.35 : 0.2 + Math.random() * 0.15,
-          shininess: 80,
+          opacity: isAlpha ? 0.65 : 0.5 + Math.random() * 0.1,
+          shininess: 100,
           emissive: color,
-          emissiveIntensity: isAlpha ? 0.4 : 0.2
+          emissiveIntensity: isAlpha ? 0.8 : 0.5
         });
         const mesh = new THREE.Mesh(geo, mat);
         // Position cells in a cluster
@@ -2130,12 +2131,12 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
       }
 
       // Membrane halo
-      const haloSize = baseSize * 2.5;
+      const haloSize = baseSize * 3;
       const haloGeo = new THREE.SphereGeometry(haloSize, segDetail, segDetail);
       const haloMat = new THREE.MeshBasicMaterial({
         color: color,
         transparent: true,
-        opacity: isAlpha ? 0.08 : 0.04,
+        opacity: isAlpha ? 0.2 : 0.12,
         side: THREE.BackSide
       });
       this.halo = new THREE.Mesh(haloGeo, haloMat);
@@ -2143,7 +2144,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
 
       // Inner glow (point light for alpha)
       if (isAlpha) {
-        const light = new THREE.PointLight(0x00d4aa, 0.6, 6);
+        const light = new THREE.PointLight(0xAAFFAA, 1.2, 8);
         this.group.add(light);
         this.light = light;
       }
@@ -2175,14 +2176,14 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
 
       // Halo pulse
       if (this.halo) {
-        this.halo.material.opacity = (this.isAlpha ? 0.08 : 0.04) + Math.sin(time * this.pulseSpeed + this.pulsePhase) * 0.02;
+        this.halo.material.opacity = (this.isAlpha ? 0.2 : 0.12) + Math.sin(time * this.pulseSpeed + this.pulsePhase) * 0.05;
       }
 
       // Cell shimmer
       this.cells.forEach((cell, i) => {
         const shimmer = Math.sin(time * 1.5 + i * 1.3) * 0.05;
-        cell.material.opacity = (this.isAlpha ? 0.35 : 0.25) + shimmer;
-        cell.material.emissiveIntensity = (this.isAlpha ? 0.4 : 0.2) + shimmer * 2;
+        cell.material.opacity = (this.isAlpha ? 0.65 : 0.5) + shimmer;
+        cell.material.emissiveIntensity = (this.isAlpha ? 0.8 : 0.5) + shimmer * 2;
       });
     }
 
@@ -2201,9 +2202,9 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
   // ── Connection tendrils ──
   const CONNECTION_DIST = 5;
   const tendrilMaterial = new THREE.LineBasicMaterial({
-    color: 0x00d4aa,
+    color: 0x39FF14,
     transparent: true,
-    opacity: 0.15
+    opacity: 0.3
   });
   const maxTendrils = 20;
   const tendrilLines = [];
@@ -2232,7 +2233,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
     });
   }
   debrisGeo.setAttribute('position', new THREE.BufferAttribute(debrisPositions, 3));
-  const debrisMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.04, transparent: true, opacity: 0.3 });
+  const debrisMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05, transparent: true, opacity: 0.5 });
   const debris = new THREE.Points(debrisGeo, debrisMat);
   scene.add(debris);
 
@@ -2453,7 +2454,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
           positions[0] = posA.x; positions[1] = posA.y; positions[2] = posA.z;
           positions[3] = posB.x; positions[4] = posB.y; positions[5] = posB.z;
           line.geometry.attributes.position.needsUpdate = true;
-          line.material.opacity = (1 - dist / CONNECTION_DIST) * 0.15;
+          line.material.opacity = (1 - dist / CONNECTION_DIST) * 0.3;
           line.visible = true;
           tendrilIdx++;
         }
