@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(start:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(C:/Users/prnt3/AppData/Local/Programs/Python/Python311/python.exe:*)"
     ]
   }
 }
