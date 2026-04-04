@@ -2201,6 +2201,179 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
     xenobots.push(new Xenobot(i, i === 0));
   }
 
+  // ── ROGUE BOT ──
+  const ROGUE_COLOR = new THREE.Color(0xCC3300);
+  const rogueGroup = new THREE.Group();
+  const seg = isMobile ? 8 : 12;
+  const rogueMat = new THREE.MeshPhongMaterial({
+    color: ROGUE_COLOR, transparent: true, opacity: 0.4,
+    shininess: 60, emissive: ROGUE_COLOR, emissiveIntensity: 0.3
+  });
+
+  // Body — squashed ellipsoid
+  const bodyGeo = new THREE.SphereGeometry(0.28, seg, seg);
+  bodyGeo.scale(1.4, 0.7, 1);
+  const body = new THREE.Mesh(bodyGeo, rogueMat.clone());
+  rogueGroup.add(body);
+
+  // Left claw
+  const clawGeo = new THREE.SphereGeometry(0.12, seg, seg);
+  clawGeo.scale(1.6, 0.6, 0.8);
+  const clawL = new THREE.Mesh(clawGeo, rogueMat.clone());
+  clawL.position.set(0.35, 0.05, 0.22);
+  clawL.rotation.z = 0.4;
+  rogueGroup.add(clawL);
+
+  // Right claw
+  const clawR = new THREE.Mesh(clawGeo.clone(), rogueMat.clone());
+  clawR.position.set(0.35, 0.05, -0.22);
+  clawR.rotation.z = -0.4;
+  rogueGroup.add(clawR);
+
+  // Tail segment
+  const tailGeo = new THREE.SphereGeometry(0.1, seg, seg);
+  tailGeo.scale(1.2, 0.5, 0.7);
+  const tail = new THREE.Mesh(tailGeo, rogueMat.clone());
+  tail.position.set(-0.38, -0.02, 0);
+  rogueGroup.add(tail);
+
+  // Dull halo
+  const rogueHaloGeo = new THREE.SphereGeometry(0.55, seg, seg);
+  const rogueHalo = new THREE.Mesh(rogueHaloGeo, new THREE.MeshBasicMaterial({
+    color: ROGUE_COLOR, transparent: true, opacity: 0.06, side: THREE.BackSide
+  }));
+  rogueGroup.add(rogueHalo);
+
+  rogueGroup.position.set(3, 1, 0);
+  scene.add(rogueGroup);
+
+  // Rogue state machine
+  const rogue = {
+    pos: new THREE.Vector3(3, 1, 0),
+    vel: new THREE.Vector3(0.04, 0.02, 0.01),
+    state: 'roaming',   // roaming | contained | breaking
+    stateTimer: 0,
+    jerkTimer: 0,
+    jerkInterval: 0.4 + Math.random() * 0.6,
+    baseSpeed: 0.05,
+    speed: 0.05,
+    containedBy: 0,
+    suppressFactor: 1,
+    flashLight: null,
+
+    init() {
+      this.flashLight = new THREE.PointLight(0x39FF14, 0, 4);
+      this.flashLight.position.copy(this.pos);
+      scene.add(this.flashLight);
+    },
+
+    update(time, dt) {
+      this.stateTimer += dt;
+      this.jerkTimer += dt;
+
+      // Jerky direction changes
+      if (this.jerkTimer > this.jerkInterval) {
+        this.jerkTimer = 0;
+        this.jerkInterval = 0.3 + Math.random() * 0.8;
+        // Bias toward edges (exfiltration attempts)
+        const edgeBias = this.pos.clone().normalize().multiplyScalar(0.02);
+        this.vel.set(
+          (Math.random() - 0.45) * 0.08 + edgeBias.x,
+          (Math.random() - 0.5) * 0.05 + edgeBias.y,
+          (Math.random() - 0.5) * 0.05 + edgeBias.z
+        );
+      }
+
+      // State behavior
+      if (this.state === 'contained') {
+        this.speed = this.baseSpeed * 0.2 * this.suppressFactor;
+        this.suppressFactor = Math.max(0.1, this.suppressFactor - dt * 0.3);
+        // Dim the rogue
+        rogueGroup.children.forEach(c => {
+          if (c.material && c.material.emissiveIntensity !== undefined) {
+            c.material.emissiveIntensity = 0.1;
+            c.material.opacity = 0.25;
+          }
+        });
+        if (this.stateTimer > 4) {
+          this.state = 'breaking';
+          this.stateTimer = 0;
+        }
+      } else if (this.state === 'breaking') {
+        this.suppressFactor = Math.min(1, this.suppressFactor + dt * 0.5);
+        this.speed = this.baseSpeed * this.suppressFactor;
+        rogueGroup.children.forEach(c => {
+          if (c.material && c.material.emissiveIntensity !== undefined) {
+            c.material.emissiveIntensity = 0.3 * this.suppressFactor;
+            c.material.opacity = 0.25 + 0.15 * this.suppressFactor;
+          }
+        });
+        if (this.stateTimer > 2) {
+          this.state = 'roaming';
+          this.stateTimer = 0;
+          this.suppressFactor = 1;
+        }
+      } else {
+        // Roaming
+        this.speed = this.baseSpeed;
+        rogueGroup.children.forEach(c => {
+          if (c.material && c.material.emissiveIntensity !== undefined) {
+            c.material.emissiveIntensity = 0.3;
+            c.material.opacity = 0.4;
+          }
+        });
+      }
+
+      // Move
+      this.pos.addScaledVector(this.vel, this.speed / this.vel.length() || 0);
+
+      // Keep in bounds, bounce back
+      const BOUND = 8;
+      if (Math.abs(this.pos.x) > BOUND) { this.vel.x *= -1; this.pos.x = Math.sign(this.pos.x) * BOUND; }
+      if (Math.abs(this.pos.y) > BOUND * 0.6) { this.vel.y *= -1; this.pos.y = Math.sign(this.pos.y) * BOUND * 0.6; }
+      if (Math.abs(this.pos.z) > BOUND * 0.5) { this.vel.z *= -1; this.pos.z = Math.sign(this.pos.z) * BOUND * 0.5; }
+
+      rogueGroup.position.copy(this.pos);
+
+      // Face movement direction
+      if (this.vel.lengthSq() > 0.0001) {
+        rogueGroup.lookAt(this.pos.clone().add(this.vel));
+      }
+
+      // Flash light decay
+      if (this.flashLight.intensity > 0) {
+        this.flashLight.intensity = Math.max(0, this.flashLight.intensity - dt * 4);
+        this.flashLight.position.copy(this.pos);
+      }
+    },
+
+    // Bump the rogue back toward center
+    bump(xenobotPos) {
+      const toCenter = this.pos.clone().negate().normalize();
+      this.vel.copy(toCenter.multiplyScalar(0.08));
+      this.pos.addScaledVector(toCenter, 0.3);
+      // Flash
+      this.flashLight.position.copy(this.pos);
+      this.flashLight.intensity = 3;
+    }
+  };
+  rogue.init();
+
+  // Containment tendrils (separate set for rogue containment)
+  const containTendrils = [];
+  for (let i = 0; i < 6; i++) {
+    const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+    const mat = new THREE.LineBasicMaterial({ color: 0x39FF14, transparent: true, opacity: 0 });
+    const line = new THREE.Line(geo, mat);
+    line.visible = false;
+    scene.add(line);
+    containTendrils.push(line);
+  }
+
+  // Rogue correction timer
+  let correctionTimer = 0;
+  const CORRECTION_INTERVAL = 12;
+
   // ── Connection tendrils ──
   const CONNECTION_DIST = 5;
   const tendrilMaterial = new THREE.LineBasicMaterial({
@@ -2431,12 +2604,94 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
   // ── Animation loop ──
   const clock = new THREE.Clock();
   let prevTendrilCount = 0;
+  let prevTime = 0;
   function animate() {
     requestAnimationFrame(animate);
     const time = clock.getElapsedTime();
+    const dt = Math.min(time - prevTime, 0.05) || 0.016;
+    prevTime = time;
 
     // Update xenobots
     xenobots.forEach(x => x.update(time));
+
+    // ── Rogue bot update ──
+    rogue.update(time, dt);
+    correctionTimer += dt;
+
+    // Find xenobots near the rogue
+    const DETECT_RADIUS = 5;
+    const CONTAIN_RADIUS = 3;
+    const roguePos = rogue.pos;
+    const nearbyXenobots = [];
+
+    for (const xb of xenobots) {
+      const xbPos = xb.getWorldPos();
+      const dist = xbPos.distanceTo(roguePos);
+
+      if (dist < DETECT_RADIUS) {
+        nearbyXenobots.push({ xb, pos: xbPos, dist });
+
+        // Alert state — brighten nearby xenobots
+        const alertFactor = 1 - (dist / DETECT_RADIUS);
+        xb.cells.forEach(cell => {
+          cell.material.emissiveIntensity = Math.min(1.2, (xb.isAlpha ? 0.8 : 0.5) + alertFactor * 0.5);
+        });
+
+        // Pursuit — 2 nearest drift toward rogue
+        if (nearbyXenobots.length <= 2 && dist > CONTAIN_RADIUS * 0.6) {
+          const toward = roguePos.clone().sub(xbPos).normalize().multiplyScalar(0.008);
+          xb.basePos.add(toward);
+        }
+      }
+    }
+
+    // Containment — 2+ xenobots close enough
+    const containingXenobots = nearbyXenobots.filter(n => n.dist < CONTAIN_RADIUS);
+    rogue.containedBy = containingXenobots.length;
+
+    if (containingXenobots.length >= 2 && rogue.state === 'roaming') {
+      rogue.state = 'contained';
+      rogue.stateTimer = 0;
+    }
+
+    // Draw containment tendrils between containing xenobots
+    let cIdx = 0;
+    if (containingXenobots.length >= 2) {
+      for (let i = 0; i < containingXenobots.length && cIdx < containTendrils.length; i++) {
+        for (let j = i + 1; j < containingXenobots.length && cIdx < containTendrils.length; j++) {
+          const line = containTendrils[cIdx];
+          const pA = containingXenobots[i].pos;
+          const pB = containingXenobots[j].pos;
+          const positions = line.geometry.attributes.position.array;
+          positions[0] = pA.x; positions[1] = pA.y; positions[2] = pA.z;
+          positions[3] = pB.x; positions[4] = pB.y; positions[5] = pB.z;
+          line.geometry.attributes.position.needsUpdate = true;
+          line.material.opacity = 0.35;
+          line.visible = true;
+          cIdx++;
+        }
+      }
+    }
+    for (let i = cIdx; i < containTendrils.length; i++) {
+      containTendrils[i].visible = false;
+      containTendrils[i].material.opacity = 0;
+    }
+
+    // Correction bump — when rogue tries to reach the edge
+    if (correctionTimer > CORRECTION_INTERVAL && rogue.state === 'roaming' && roguePos.length() > 5) {
+      correctionTimer = 0;
+      // Find nearest xenobot for the bump
+      let nearest = null, nearDist = Infinity;
+      for (const xb of xenobots) {
+        const d = xb.getWorldPos().distanceTo(roguePos);
+        if (d < nearDist) { nearDist = d; nearest = xb; }
+      }
+      if (nearest && nearDist < 7) {
+        // Quick burst — move xenobot toward rogue then bump
+        nearest.basePos.lerp(roguePos, 0.15);
+        rogue.bump(nearest.getWorldPos());
+      }
+    }
 
     // Camera parallax
     camera.position.x = 0 + mouse.x * 0.8;
