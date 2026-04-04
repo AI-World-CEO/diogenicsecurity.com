@@ -2202,45 +2202,50 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
   }
 
   // ── ROGUE BOT ──
-  const ROGUE_COLOR = new THREE.Color(0xCC3300);
+  const ROGUE_BODY = new THREE.Color(0xFF4500);
+  const ROGUE_CLAW = new THREE.Color(0xFF2200);
   const rogueGroup = new THREE.Group();
   const seg = isMobile ? 8 : 12;
-  const rogueMat = new THREE.MeshPhongMaterial({
-    color: ROGUE_COLOR, transparent: true, opacity: 0.4,
-    shininess: 60, emissive: ROGUE_COLOR, emissiveIntensity: 0.3
+  const rogueBodyMat = new THREE.MeshPhongMaterial({
+    color: ROGUE_BODY, transparent: true, opacity: 0.7,
+    shininess: 100, emissive: ROGUE_BODY, emissiveIntensity: 0.6
+  });
+  const rogueClawMat = new THREE.MeshPhongMaterial({
+    color: ROGUE_CLAW, transparent: true, opacity: 0.7,
+    shininess: 100, emissive: ROGUE_CLAW, emissiveIntensity: 0.6
   });
 
   // Body — squashed ellipsoid
-  const bodyGeo = new THREE.SphereGeometry(0.28, seg, seg);
+  const bodyGeo = new THREE.SphereGeometry(0.34, seg, seg);
   bodyGeo.scale(1.4, 0.7, 1);
-  const body = new THREE.Mesh(bodyGeo, rogueMat.clone());
+  const body = new THREE.Mesh(bodyGeo, rogueBodyMat.clone());
   rogueGroup.add(body);
 
   // Left claw
-  const clawGeo = new THREE.SphereGeometry(0.12, seg, seg);
+  const clawGeo = new THREE.SphereGeometry(0.15, seg, seg);
   clawGeo.scale(1.6, 0.6, 0.8);
-  const clawL = new THREE.Mesh(clawGeo, rogueMat.clone());
+  const clawL = new THREE.Mesh(clawGeo, rogueClawMat.clone());
   clawL.position.set(0.35, 0.05, 0.22);
   clawL.rotation.z = 0.4;
   rogueGroup.add(clawL);
 
   // Right claw
-  const clawR = new THREE.Mesh(clawGeo.clone(), rogueMat.clone());
+  const clawR = new THREE.Mesh(clawGeo.clone(), rogueClawMat.clone());
   clawR.position.set(0.35, 0.05, -0.22);
   clawR.rotation.z = -0.4;
   rogueGroup.add(clawR);
 
   // Tail segment
-  const tailGeo = new THREE.SphereGeometry(0.1, seg, seg);
+  const tailGeo = new THREE.SphereGeometry(0.13, seg, seg);
   tailGeo.scale(1.2, 0.5, 0.7);
-  const tail = new THREE.Mesh(tailGeo, rogueMat.clone());
+  const tail = new THREE.Mesh(tailGeo, rogueBodyMat.clone());
   tail.position.set(-0.38, -0.02, 0);
   rogueGroup.add(tail);
 
   // Dull halo
-  const rogueHaloGeo = new THREE.SphereGeometry(0.55, seg, seg);
+  const rogueHaloGeo = new THREE.SphereGeometry(0.7, seg, seg);
   const rogueHalo = new THREE.Mesh(rogueHaloGeo, new THREE.MeshBasicMaterial({
-    color: ROGUE_COLOR, transparent: true, opacity: 0.06, side: THREE.BackSide
+    color: ROGUE_BODY, transparent: true, opacity: 0.15, side: THREE.BackSide
   }));
   rogueGroup.add(rogueHalo);
 
@@ -2291,8 +2296,8 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
         // Dim the rogue
         rogueGroup.children.forEach(c => {
           if (c.material && c.material.emissiveIntensity !== undefined) {
-            c.material.emissiveIntensity = 0.1;
-            c.material.opacity = 0.25;
+            c.material.emissiveIntensity = 0.15;
+            c.material.opacity = 0.35;
           }
         });
         if (this.stateTimer > 4) {
@@ -2304,8 +2309,8 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
         this.speed = this.baseSpeed * this.suppressFactor;
         rogueGroup.children.forEach(c => {
           if (c.material && c.material.emissiveIntensity !== undefined) {
-            c.material.emissiveIntensity = 0.3 * this.suppressFactor;
-            c.material.opacity = 0.25 + 0.15 * this.suppressFactor;
+            c.material.emissiveIntensity = 0.6 * this.suppressFactor;
+            c.material.opacity = 0.35 + 0.35 * this.suppressFactor;
           }
         });
         if (this.stateTimer > 2) {
@@ -2318,8 +2323,8 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
         this.speed = this.baseSpeed;
         rogueGroup.children.forEach(c => {
           if (c.material && c.material.emissiveIntensity !== undefined) {
-            c.material.emissiveIntensity = 0.3;
-            c.material.opacity = 0.4;
+            c.material.emissiveIntensity = 0.6;
+            c.material.opacity = 0.7;
           }
         });
       }
