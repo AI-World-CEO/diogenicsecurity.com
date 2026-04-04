@@ -2099,7 +2099,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
 
       // Pulse
       this.pulsePhase = Math.random() * Math.PI * 2;
-      this.pulseSpeed = 0.8 + Math.random() * 0.6;
+      this.pulseSpeed = 0.56 + Math.random() * 0.42;
 
       // Cell cluster: 3-5 overlapping spheres
       const cellCount = isAlpha ? 5 : 3 + Math.floor(Math.random() * 3);
@@ -2156,7 +2156,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
 
     update(time) {
       // Organic wandering
-      const t = time * 0.18;
+      const t = time * 0.126;
       this.group.position.x = this.basePos.x + Math.sin(t * this.freq.x + this.phase.x) * this.wanderAmp.x;
       this.group.position.y = this.basePos.y + Math.sin(t * this.freq.y + this.phase.y) * this.wanderAmp.y;
       this.group.position.z = this.basePos.z + Math.sin(t * this.freq.z + this.phase.z) * this.wanderAmp.z;
@@ -2337,8 +2337,8 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
       stateTimer: rogueInitTimers[ri],
       jerkTimer: 0,
       jerkInterval: 0.3 + Math.random() * 0.6,
-      baseSpeed: 0.03,
-      speed: 0.03,
+      baseSpeed: 0.021,
+      speed: 0.021,
       containedBy: 0,
       suppressFactor: 1,
       flashLight: flash,
@@ -2352,12 +2352,12 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
         // Jerky direction changes
         if (this.jerkTimer > this.jerkInterval) {
           this.jerkTimer = 0;
-          this.jerkInterval = 0.5 + Math.random() * 1.2;
-          const edgeBias = this.pos.clone().normalize().multiplyScalar(0.012);
+          this.jerkInterval = 0.7 + Math.random() * 1.7;
+          const edgeBias = this.pos.clone().normalize().multiplyScalar(0.008);
           this.vel.set(
-            (Math.random() - 0.45) * 0.05 + edgeBias.x,
-            (Math.random() - 0.5) * 0.03 + edgeBias.y,
-            (Math.random() - 0.5) * 0.03 + edgeBias.z
+            (Math.random() - 0.45) * 0.035 + edgeBias.x,
+            (Math.random() - 0.5) * 0.021 + edgeBias.y,
+            (Math.random() - 0.5) * 0.021 + edgeBias.z
           );
         }
 
@@ -2375,7 +2375,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
               c.material.opacity = 0.5;
             }
           });
-          if (this.stateTimer > 5.6) { this.state = 'breaking'; this.stateTimer = 0; }
+          if (this.stateTimer > 7.3) { this.state = 'breaking'; this.stateTimer = 0; }
         } else if (this.state === 'breaking') {
           this.suppressFactor = Math.min(1, this.suppressFactor + dt * 0.5);
           this.speed = this.baseSpeed * this.suppressFactor;
@@ -2385,7 +2385,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
               c.material.opacity = 0.5 + 0.4 * this.suppressFactor;
             }
           });
-          if (this.stateTimer > 2.8) { this.state = 'roaming'; this.stateTimer = 0; this.suppressFactor = 1; }
+          if (this.stateTimer > 3.6) { this.state = 'roaming'; this.stateTimer = 0; this.suppressFactor = 1; }
         } else {
           this.speed = this.baseSpeed;
           this.group.children.forEach(c => {
@@ -2694,7 +2694,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
     // ── Rogue bots update ──
     const DETECT_RADIUS = 6;
     const CONTAIN_RADIUS = 2.2;
-    const ESCORT_PULL = 0.018; // how fast escorts converge
+    const ESCORT_PULL = 0.013; // how fast escorts converge
     let cageIdx = 0;
 
     for (let ri = 0; ri < rogues.length; ri++) {
@@ -2750,7 +2750,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
         rg.stateTimer = 0;
       }
       // Force re-containment quickly if roaming too long
-      if (rg.state === 'roaming' && rg.stateTimer > 8.4) {
+      if (rg.state === 'roaming' && rg.stateTimer > 10.9) {
         // Pull escorts closer aggressively
         for (const e of escorts) {
           e.xb.basePos.lerp(rgPos, 0.05);
@@ -2769,7 +2769,7 @@ threats = swarm.<span class="fn">get_consensus_threats</span>()
       }
 
       // Correction bump
-      if (rg.correctionTimer > 14 && rg.state === 'roaming' && rgPos.length() > 4) {
+      if (rg.correctionTimer > 18 && rg.state === 'roaming' && rgPos.length() > 4) {
         rg.correctionTimer = 0;
         if (escorts.length > 0) {
           const nearest = escorts.reduce((a, b) => a.dist < b.dist ? a : b);
