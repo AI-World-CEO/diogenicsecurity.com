@@ -1720,67 +1720,69 @@ ul { list-style: none; }
 
       <div class="code-panel active" id="panel-0">
         <button class="copy-btn" onclick="copyCode(0, this)" aria-label="Copy code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-<pre><span class="kw">from</span> diogenesis <span class="kw">import</span> start_monitoring
+<pre><span class="kw">from</span> diogenesis_sdk <span class="kw">import</span> activate, status
 
-<span class="cm"># Start behavioral monitoring with one call</span>
-monitor = <span class="fn">start_monitoring</span>()
+<span class="cm"># Start the behavioral immune system</span>
+<span class="fn">activate</span>()
 
 <span class="cm"># Your AI application runs normally</span>
 <span class="cm"># Diogenesis watches every import, file write,</span>
 <span class="cm"># network connection, and subprocess in the background</span>
 
-<span class="cm"># Check what's been observed</span>
-report = monitor.<span class="fn">get_report</span>()
-<span class="fn">print</span>(report.summary)</pre>
+<span class="cm"># Check system status</span>
+<span class="fn">print</span>(<span class="fn">status</span>())</pre>
       </div>
 
       <div class="code-panel" id="panel-1">
         <button class="copy-btn" onclick="copyCode(1, this)" aria-label="Copy code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-<pre><span class="kw">from</span> diogenesis <span class="kw">import</span> get_voltage_field
+<pre><span class="kw">from</span> diogenesis_sdk <span class="kw">import</span> activate, field_state
 
-<span class="cm"># Get real-time behavioral coherence data</span>
-field = <span class="fn">get_voltage_field</span>()
+<span class="fn">activate</span>()
 
-<span class="cm"># Check per-module health scores</span>
-<span class="kw">for</span> module, voltage <span class="kw">in</span> field.modules.items():
-    <span class="kw">if</span> voltage.coherence &lt; <span class="num">0.7</span>:
-        <span class="fn">print</span>(<span class="str">f"⚠ {module}: coherence={voltage.coherence}"</span>)
+<span class="cm"># Inspect the voltage field — per-module coherence</span>
+state = <span class="fn">field_state</span>()
+
+<span class="cm"># Check each module's behavioral health</span>
+<span class="kw">for</span> name, module <span class="kw">in</span> state[<span class="str">"modules"</span>].items():
+    voltage = module[<span class="str">"voltage"</span>]
+    <span class="kw">if</span> voltage &lt; <span class="num">0.7</span>:
+        <span class="fn">print</span>(<span class="str">f"⚠ {name}: voltage={voltage}"</span>)
     <span class="kw">else</span>:
-        <span class="fn">print</span>(<span class="str">f"✓ {module}: stable at {voltage.coherence}"</span>)</pre>
+        <span class="fn">print</span>(<span class="str">f"✓ {name}: stable at {voltage}"</span>)</pre>
       </div>
 
       <div class="code-panel" id="panel-2">
         <button class="copy-btn" onclick="copyCode(2, this)" aria-label="Copy code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-<pre><span class="kw">from</span> diogenesis <span class="kw">import</span> PolicyEngine
+<pre><span class="kw">from</span> diogenesis_sdk <span class="kw">import</span> activate, threat_summary
 
-<span class="cm"># The policy engine detects 5 behavioral threat patterns:</span>
-<span class="cm">#   - Data exfiltration (unexpected outbound connections)</span>
-<span class="cm">#   - Privilege escalation (unauthorized permission changes)</span>
-<span class="cm">#   - Shadow imports (loading modules outside baseline)</span>
-<span class="cm">#   - Resource abuse (excessive file/network activity)</span>
-<span class="cm">#   - Behavioral drift (gradual deviation from baseline)</span>
+<span class="fn">activate</span>()
 
-engine = <span class="fn">PolicyEngine</span>()
-engine.<span class="fn">on_threat</span>(<span class="str">"exfiltration"</span>, severity=<span class="str">"ALERT"</span>,
-    callback=<span class="kw">lambda</span> e: <span class="fn">print</span>(<span class="str">f"🚨 Exfiltration detected: {e}"</span>)
-)</pre>
+<span class="cm"># Get threat analysis from the xenobot swarm</span>
+<span class="cm"># Detects: exfiltration, shadow imports, write bursts,</span>
+<span class="cm">#          network scans, privilege escalation</span>
+threats = <span class="fn">threat_summary</span>()
+
+<span class="fn">print</span>(<span class="str">f"Threats: {threats['threats']}"</span>)
+<span class="fn">print</span>(<span class="str">f"Suspicious: {threats['suspicious']}"</span>)
+<span class="fn">print</span>(<span class="str">f"Agents: {list(threats['agents'].keys())}"</span>)</pre>
       </div>
 
       <div class="code-panel" id="panel-3">
         <button class="copy-btn" onclick="copyCode(3, this)" aria-label="Copy code"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
-<pre><span class="kw">from</span> diogenesis <span class="kw">import</span> XenobotSwarm
+<pre><span class="kw">from</span> diogenesis_sdk <span class="kw">import</span> activate, XenobotAgent, add_agent, investigations
 
-<span class="cm"># Deploy autonomous investigative agents</span>
-swarm = <span class="fn">XenobotSwarm</span>(agents=<span class="num">5</span>)
-swarm.<span class="fn">deploy</span>()
+<span class="fn">activate</span>()
 
-<span class="cm"># Agents patrol, detect anomalies, and share learning</span>
-<span class="cm"># Like white blood cells in a biological immune system</span>
+<span class="cm"># Create a custom security agent</span>
+agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</span>, domain=<span class="str">"file"</span>)
+<span class="fn">add_agent</span>(agent)
 
-<span class="cm"># Query swarm intelligence</span>
-threats = swarm.<span class="fn">get_consensus_threats</span>()
-<span class="kw">for</span> threat <span class="kw">in</span> threats:
-    <span class="fn">print</span>(<span class="str">f"[{threat.confidence:.0%}] {threat.description}"</span>)</pre>
+<span class="cm"># The agent uses a 5-phase investigation cycle:</span>
+<span class="cm"># Observe → Question → Search → Synthesize → Crystallize</span>
+
+<span class="cm"># Query all investigation findings</span>
+<span class="kw">for</span> inv <span class="kw">in</span> <span class="fn">investigations</span>():
+    <span class="fn">print</span>(<span class="str">f"[{inv['verdict']}] {inv['hypothesis']}"</span>)</pre>
       </div>
     </div>
   </div>
@@ -2898,10 +2900,10 @@ function copyText(text, btn) {
 }
 
 const codeSnippets = [
-  `from diogenesis import start_monitoring\n\n# Start behavioral monitoring with one call\nmonitor = start_monitoring()\n\n# Your AI application runs normally\n# Diogenesis watches every import, file write,\n# network connection, and subprocess in the background\n\n# Check what's been observed\nreport = monitor.get_report()\nprint(report.summary)`,
-  `from diogenesis import get_voltage_field\n\n# Get real-time behavioral coherence data\nfield = get_voltage_field()\n\n# Check per-module health scores\nfor module, voltage in field.modules.items():\n    if voltage.coherence < 0.7:\n        print(f"⚠ {module}: coherence={voltage.coherence}")\n    else:\n        print(f"✓ {module}: stable at {voltage.coherence}")`,
-  `from diogenesis import PolicyEngine\n\n# The policy engine detects 5 behavioral threat patterns:\n#   - Data exfiltration (unexpected outbound connections)\n#   - Privilege escalation (unauthorized permission changes)\n#   - Shadow imports (loading modules outside baseline)\n#   - Resource abuse (excessive file/network activity)\n#   - Behavioral drift (gradual deviation from baseline)\n\nengine = PolicyEngine()\nengine.on_threat("exfiltration", severity="ALERT",\n    callback=lambda e: print(f"🚨 Exfiltration detected: {e}")\n)`,
-  `from diogenesis import XenobotSwarm\n\n# Deploy autonomous investigative agents\nswarm = XenobotSwarm(agents=5)\nswarm.deploy()\n\n# Agents patrol, detect anomalies, and share learning\n# Like white blood cells in a biological immune system\n\n# Query swarm intelligence\nthreats = swarm.get_consensus_threats()\nfor threat in threats:\n    print(f"[{threat.confidence:.0%}] {threat.description}")`
+  `from diogenesis_sdk import activate, status\n\n# Start the behavioral immune system\nactivate()\n\n# Your AI application runs normally\n# Diogenesis watches every import, file write,\n# network connection, and subprocess in the background\n\n# Check system status\nprint(status())`,
+  `from diogenesis_sdk import activate, field_state\n\nactivate()\n\n# Inspect the voltage field — per-module coherence\nstate = field_state()\n\n# Check each module's behavioral health\nfor name, module in state["modules"].items():\n    voltage = module["voltage"]\n    if voltage < 0.7:\n        print(f"⚠ {name}: voltage={voltage}")\n    else:\n        print(f"✓ {name}: stable at {voltage}")`,
+  `from diogenesis_sdk import activate, threat_summary\n\nactivate()\n\n# Get threat analysis from the xenobot swarm\n# Detects: exfiltration, shadow imports, write bursts,\n#          network scans, privilege escalation\nthreats = threat_summary()\n\nprint(f"Threats: {threats['threats']}")\nprint(f"Suspicious: {threats['suspicious']}")\nprint(f"Agents: {list(threats['agents'].keys())}")`,
+  `from diogenesis_sdk import activate, XenobotAgent, add_agent, investigations\n\nactivate()\n\n# Create a custom security agent\nagent = XenobotAgent("custom_patrol", domain="file")\nadd_agent(agent)\n\n# The agent uses a 5-phase investigation cycle:\n# Observe → Question → Search → Synthesize → Crystallize\n\n# Query all investigation findings\nfor inv in investigations():\n    print(f"[{inv['verdict']}] {inv['hypothesis']}")`
 ];
 
 function copyCode(index, btn) {
