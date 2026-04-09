@@ -129,9 +129,40 @@ ul { list-style: none; }
   color: var(--text-primary);
 }
 .nav-logo svg { flex-shrink: 0; transition: filter 0.3s; }
-.nav-logo { cursor: pointer; background: none; border: none; transition: text-shadow 0.3s; }
-.nav-logo:hover { text-shadow: 0 0 12px rgba(0, 212, 170, 0.6); color: var(--text-primary); }
+.nav-logo { cursor: pointer; background: none; border: none; transition: text-shadow 0.3s; text-align: left; }
+.nav-logo:hover { color: var(--text-primary); }
+.nav-logo:hover .logo-title { text-shadow: 0 0 12px rgba(0, 212, 170, 0.6); }
 .nav-logo:hover svg { filter: drop-shadow(0 0 8px rgba(0, 212, 170, 0.8)); }
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.logo-title {
+  transition: text-shadow 0.3s;
+}
+.about-hint {
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+  font-weight: 400;
+  color: var(--accent);
+  opacity: 0.5;
+  letter-spacing: 1px;
+  margin-top: 3px;
+  transition: opacity 0.3s, text-shadow 0.3s;
+  animation: hintPulse 3.5s ease-in-out infinite;
+}
+.nav-logo:hover .about-hint {
+  opacity: 0.95;
+  text-shadow: 0 0 8px rgba(0, 212, 170, 0.5);
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+@media (max-width: 480px) {
+  .about-hint { display: none; }
+}
 
 /* ─── ABOUT MODAL ─── */
 .modal-backdrop {
@@ -1366,7 +1397,10 @@ ul { list-style: none; }
         <circle cx="9" cy="21" r="1.5" fill="#00d4aa" opacity="0.4"/>
         <circle cx="9" cy="12" r="1.5" fill="#00d4aa" opacity="0.4"/>
       </svg>
-      Diogenesis
+      <span class="logo-text">
+        <span class="logo-title">Diogenesis</span>
+        <span class="about-hint">What is Diogenesis?</span>
+      </span>
     </button>
     <div class="nav-links">
       <a href="#problem">Why</a>
