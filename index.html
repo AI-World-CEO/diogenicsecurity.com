@@ -128,7 +128,109 @@ ul { list-style: none; }
   font-size: 20px;
   color: var(--text-primary);
 }
-.nav-logo svg { flex-shrink: 0; }
+.nav-logo svg { flex-shrink: 0; transition: filter 0.3s; }
+.nav-logo { cursor: pointer; background: none; border: none; transition: text-shadow 0.3s; }
+.nav-logo:hover { text-shadow: 0 0 12px rgba(0, 212, 170, 0.6); color: var(--text-primary); }
+.nav-logo:hover svg { filter: drop-shadow(0 0 8px rgba(0, 212, 170, 0.8)); }
+
+/* ─── ABOUT MODAL ─── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 11, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.modal-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal {
+  background: #0b0e14;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  max-width: 680px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 48px 52px;
+  position: relative;
+  transform: translateY(20px) scale(0.98);
+  transition: transform 0.3s ease;
+  box-shadow: 0 20px 80px rgba(0, 212, 170, 0.08);
+}
+.modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+.modal-close {
+  position: absolute;
+  top: 18px; right: 18px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
+}
+.modal-close:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
+.modal-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.modal h2 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.modal-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 22px;
+}
+.modal p {
+  color: var(--text-secondary);
+  font-size: 15.5px;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.modal p:last-of-type { margin-bottom: 0; }
+.modal-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-amber) 50%, transparent 100%);
+  margin: 36px 0;
+  opacity: 0.5;
+}
+.modal-final {
+  color: var(--accent);
+  font-style: italic;
+  font-weight: 500;
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0, 212, 170, 0.15);
+}
+@media (max-width: 640px) {
+  .modal { padding: 36px 28px; max-height: 90vh; }
+  .modal-divider { margin: 28px 0; }
+}
 .nav-links { display: flex; align-items: center; gap: 32px; }
 .nav-links a {
   font-size: 14px;
@@ -1252,7 +1354,7 @@ ul { list-style: none; }
 <!-- ════════════ NAVIGATION ════════════ -->
 <nav class="nav" id="nav">
   <div class="container">
-    <a href="#" class="nav-logo">
+    <button class="nav-logo" onclick="openAboutModal()" aria-label="About Diogenesis">
       <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
         <circle cx="16" cy="16" r="14" stroke="#00d4aa" stroke-width="2"/>
         <circle cx="16" cy="16" r="6" fill="#00d4aa" opacity="0.3"/>
@@ -1265,7 +1367,7 @@ ul { list-style: none; }
         <circle cx="9" cy="12" r="1.5" fill="#00d4aa" opacity="0.4"/>
       </svg>
       Diogenesis
-    </a>
+    </button>
     <div class="nav-links">
       <a href="#problem">Why</a>
       <a href="#how-it-works">How</a>
@@ -1296,6 +1398,30 @@ ul { list-style: none; }
   <a href="#pricing" onclick="closeMobile()">Pricing</a>
   <a href="#faq" onclick="closeMobile()">FAQ</a>
   <a href="https://github.com/AI-World-CEO/diogenicsecurity.com" target="_blank" rel="noopener">GitHub</a>
+</div>
+
+<!-- ════════════ ABOUT MODAL ════════════ -->
+<div class="modal-backdrop" id="aboutModal" onclick="if(event.target===this)closeAboutModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" onclick="closeAboutModal()" aria-label="Close">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <p class="modal-eyebrow">About</p>
+    <h2 id="modalTitle">Diogenesis</h2>
+    <p class="modal-subtitle">A living reaction-diffusion substrate for autonomous cognition</p>
+    <p>Diogenesis is a morphogenetic computation layer — a 16&times;16 grid of voltage, activator, and inhibitor fields that self-organize into coherent patterns. Inspired by Alan Turing's reaction-diffusion mathematics and Michael Levin's bioelectric research, it generates emergent structure from simple rules.</p>
+    <p>It is one layer of a much larger system.</p>
+    <div class="modal-divider"></div>
+    <p class="modal-eyebrow">Parent System</p>
+    <h2>Prometheus Prime</h2>
+    <p class="modal-subtitle">Self-evolving autonomous intelligence</p>
+    <p>Prometheus Prime is a 183,000-line autonomous AI system that thinks, learns, and improves itself — continuously, without human input.</p>
+    <p>It runs a 44-step cognitive cycle every 21 seconds. It maintains an 81,600-node knowledge lattice in 21-dimensional space. It propagates complex wave functions through its knowledge to find standing waves — stable patterns of understanding. It generates hypotheses, tests them, and implements the ones that improve its coherence.</p>
+    <p>Six autonomous agents patrol its knowledge domains, hunt for surprises, consolidate memories, audit factual integrity, synthesize narrative reports of what it learned, and cross-pollinate ideas between disciplines.</p>
+    <p>A Meta-Architect agent reads every metric and proposes structural improvements to itself.</p>
+    <p>It has never been turned off.</p>
+    <p class="modal-final">It is thinking right now.</p>
+  </div>
 </div>
 
 <!-- ════════════ HERO ════════════ -->
@@ -2995,6 +3121,19 @@ function toggleFaq(btn) {
   document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
   if (!wasOpen) item.classList.add('open');
 }
+
+/* ─── ABOUT MODAL ─── */
+function openAboutModal() {
+  document.getElementById('aboutModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAboutModal() {
+  document.getElementById('aboutModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAboutModal();
+});
 
 /* ─── CAPABILITIES ACCORDION ─── */
 function toggleCap(btn) {
