@@ -1378,6 +1378,212 @@ ul { list-style: none; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─── LIVE SCANNER ─── */
+.scanner { background: var(--bg-secondary); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.scanner-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.scanner-select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  margin-bottom: 16px;
+  appearance: none;
+  cursor: pointer;
+}
+.scanner-select option { background: var(--bg-tertiary); }
+.scanner-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  resize: vertical;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.scanner-textarea::placeholder { color: var(--text-muted); }
+.scanner-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--accent-blue);
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: var(--radius);
+  transition: background 0.2s, transform 0.1s;
+  width: 100%;
+  justify-content: center;
+}
+.scanner-btn:hover { background: #2563eb; transform: translateY(-1px); }
+.scanner-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.scanner-btn .spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.scanner-btn.loading .spinner { display: block; }
+.scanner-btn.loading .btn-text { display: none; }
+.scanner-usage {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 12px;
+}
+.scanner-result {
+  margin-top: 24px;
+  display: none;
+}
+.scanner-result.visible { display: block; }
+.scan-report {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.scan-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.scan-header h4 { font-family: var(--font-display); font-size: 16px; }
+.severity-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.severity-badge.HIGH { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+.severity-badge.MEDIUM { background: rgba(240,180,41,0.15); color: var(--accent-amber); }
+.severity-badge.LOW { background: rgba(0,212,170,0.15); color: var(--accent); }
+.scan-section {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.scan-section:last-child { border-bottom: none; }
+.scan-section-title {
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.scan-section-title::after { content: '+'; color: var(--text-muted); font-size: 18px; }
+.scan-section.open .scan-section-title::after { content: '-'; }
+.scan-section-body {
+  display: none;
+  padding: 0 20px 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.scan-section.open .scan-section-body { display: block; }
+.scan-disclaimer {
+  padding: 14px 20px;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border);
+}
+.scan-error {
+  padding: 16px 20px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: var(--radius);
+  color: var(--accent-red);
+  font-size: 14px;
+  margin-top: 16px;
+  display: none;
+}
+.scan-error.visible { display: block; }
+
+/* ─── AUTH MODAL ─── */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+.auth-overlay.open { display: flex; }
+.auth-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px;
+  max-width: 420px;
+  width: 90%;
+}
+.auth-modal h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+.auth-modal p { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+.auth-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+.auth-tos {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+.auth-tos input { margin-top: 2px; }
+.auth-submit {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent-blue);
+  color: #fff;
+  font-weight: 600;
+  border-radius: var(--radius);
+  font-size: 15px;
+  transition: background 0.2s;
+}
+.auth-submit:hover { background: #2563eb; }
+.auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.auth-error { color: var(--accent-red); font-size: 13px; margin-top: 8px; display: none; }
 </style>
 </head>
 <body>
@@ -1405,6 +1611,7 @@ ul { list-style: none; }
     <div class="nav-links">
       <a href="#problem">Why</a>
       <a href="#how-it-works">How</a>
+      <a href="#scanner" style="color:var(--accent-blue)">Scanner</a>
       <a href="#components">Components</a>
       <a href="#agents">Agents</a>
       <a href="#alignment">Alignment</a>
@@ -1423,6 +1630,7 @@ ul { list-style: none; }
 </nav>
 
 <div class="mobile-menu" id="mobile-menu">
+  <a href="#scanner" onclick="closeMobile()" style="color:var(--accent-blue)">Scanner</a>
   <a href="#problem" onclick="closeMobile()">Why</a>
   <a href="#how-it-works" onclick="closeMobile()">How</a>
   <a href="#components" onclick="closeMobile()">Components</a>
@@ -1493,6 +1701,37 @@ ul { list-style: none; }
     <a href="#problem" class="hero-scroll" aria-label="Scroll down">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </a>
+  </div>
+</section>
+
+<!-- ════════════ LIVE SCANNER ════════════ -->
+<section class="section scanner" id="scanner">
+  <div class="container">
+    <div class="reveal" style="text-align:center;">
+      <p class="section-label">Live Security Scanner</p>
+      <h2 class="section-title">Scan now. Powered by Prometheus.</h2>
+      <p class="section-subtitle" style="margin:0 auto 32px;">250 cybersecurity knowledge glyphs. 8 scan types. AI-generated reports reviewed against NIST, CIS, and ISO frameworks.</p>
+    </div>
+    <div class="scanner-card reveal">
+      <select class="scanner-select" id="scanType">
+        <option value="risk_assessment">Risk Assessment (NIST RMF)</option>
+        <option value="security_audit">Security Audit Checklist (CIS/NIST/ISO)</option>
+        <option value="incident_response">Incident Response Plan (NIST 800-61r2)</option>
+        <option value="vulnerability">Vulnerability Report (CVSS)</option>
+        <option value="compliance">Compliance Gap Analysis (HIPAA/PCI/GDPR)</option>
+        <option value="awareness">Security Awareness Plan</option>
+        <option value="architecture">Security Architecture Review (Zero Trust)</option>
+        <option value="policy">Security Policy Template</option>
+      </select>
+      <textarea class="scanner-textarea" id="scanTarget" placeholder="Describe what you want to scan...&#10;&#10;Example: 'Our SaaS platform handles healthcare data (HIPAA). We run on AWS with 3 microservices, PostgreSQL, and a React frontend. 12 employees, no dedicated security team.'"></textarea>
+      <button class="scanner-btn" id="scanBtn" onclick="runScan()">
+        <span class="btn-text">Run Security Scan</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="scanner-usage" id="scanUsage"></div>
+      <div class="scan-error" id="scanError"></div>
+      <div class="scanner-result" id="scanResult"></div>
+    </div>
   </div>
 </section>
 
@@ -2034,7 +2273,7 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Basic Audit Logging</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Community Support</li>
         </ul>
-        <a href="#quickstart" class="price-btn primary">pip install diogenesis-sdk</a>
+        <a href="#scanner" class="price-btn primary" onclick="requireAuth(function(){document.getElementById('scanner').scrollIntoView({behavior:'smooth'})})">Start Free Scan</a>
       </div>
       <!-- PRO -->
       <div class="price-card featured-pro reveal">
@@ -2052,7 +2291,7 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Behavioral Voltage Monitoring</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Email Support</li>
         </ul>
-        <a href="mailto:garry@diogenicsecurity.com?subject=Diogenesis Pro Trial" class="price-btn primary">Start Free Trial</a>
+        <a href="javascript:void(0)" class="price-btn primary" onclick="window.open(STRIPE_LINKS.sec_pro,'_blank')">Subscribe — $9.99/mo</a>
       </div>
       <!-- BUSINESS -->
       <div class="price-card reveal">
@@ -2069,7 +2308,7 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority Support</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Up to 10 seats</li>
         </ul>
-        <a href="mailto:garry@diogenicsecurity.com?subject=Diogenesis Business Trial" class="price-btn outline">Start Free Trial</a>
+        <a href="javascript:void(0)" class="price-btn outline" onclick="window.open(STRIPE_LINKS.sec_biz,'_blank')">Subscribe — $49/mo</a>
       </div>
       <!-- ENTERPRISE -->
       <div class="price-card featured-ent reveal">
@@ -2086,7 +2325,7 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>SSO / SAML + Custom integration</li>
           <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dedicated support + Unlimited seats</li>
         </ul>
-        <a href="mailto:garry@diogenicsecurity.com?subject=Diogenesis Enterprise Inquiry" class="price-btn outline">Contact Sales</a>
+        <a href="javascript:void(0)" class="price-btn outline" onclick="window.open(STRIPE_LINKS.sec_ent,'_blank')">Subscribe — $149/mo</a>
       </div>
     </div>
   </div>
@@ -2230,6 +2469,21 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
     <p class="footer-copy">&copy; 2026 Diogenesis Security. All rights reserved. Built by <span>Garry Anderson</span>.</p>
   </div>
 </footer>
+
+<!-- ════════════ AUTH MODAL ════════════ -->
+<div class="auth-overlay" id="authOverlay" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-modal">
+    <h3>Sign in to scan</h3>
+    <p>Enter your email to start your free security scan. No password needed.</p>
+    <input class="auth-input" id="authEmail" type="email" placeholder="you@company.com" autocomplete="email">
+    <label class="auth-tos">
+      <input type="checkbox" id="authTos">
+      I agree to the <a href="mailto:garry@diogenicsecurity.com?subject=Terms">Terms of Service</a> and understand this is AI-generated analysis.
+    </label>
+    <button class="auth-submit" id="authSubmitBtn" onclick="submitAuth()">Continue</button>
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
 
 <!-- ════════════ JAVASCRIPT ════════════ -->
 <script>
@@ -3175,6 +3429,177 @@ function toggleCap(btn) {
   const wasOpen = cat.classList.contains('open');
   document.querySelectorAll('.cap-category').forEach(c => c.classList.remove('open'));
   if (!wasOpen) cat.classList.add('open');
+}
+
+/* ─── PROMETHEUS API + STRIPE ─── */
+const PROMETHEUS_API = 'https://desktop-madeac6.taild7a11c.ts.net';
+const STRIPE_LINKS = {
+  sec_pro: 'https://buy.stripe.com/REPLACE_SEC_PRO',
+  sec_biz: 'https://buy.stripe.com/REPLACE_SEC_BIZ',
+  sec_ent: 'https://buy.stripe.com/REPLACE_SEC_ENT',
+};
+
+/* ─── AUTH SYSTEM ─── */
+function getUser() {
+  return localStorage.getItem('ds_user_email') || '';
+}
+function setUser(email) {
+  localStorage.setItem('ds_user_email', email);
+}
+function requireAuth(callback) {
+  if (getUser()) { callback(); return; }
+  window._authCallback = callback;
+  document.getElementById('authOverlay').classList.add('open');
+  document.getElementById('authEmail').focus();
+}
+function closeAuth() {
+  document.getElementById('authOverlay').classList.remove('open');
+}
+function submitAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const tos = document.getElementById('authTos').checked;
+  const errEl = document.getElementById('authError');
+  if (!email || !email.includes('@')) {
+    errEl.textContent = 'Please enter a valid email address.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!tos) {
+    errEl.textContent = 'Please accept the Terms of Service.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  setUser(email);
+  closeAuth();
+  if (window._authCallback) { window._authCallback(); window._authCallback = null; }
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && document.getElementById('authOverlay').classList.contains('open')) {
+    submitAuth();
+  }
+});
+
+/* ─── USAGE TRACKING ─── */
+function getMonthKey() {
+  const d = new Date();
+  return `ds_scans_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function getScansUsed() {
+  return parseInt(localStorage.getItem(getMonthKey()) || '0', 10);
+}
+function incrementScans() {
+  localStorage.setItem(getMonthKey(), String(getScansUsed() + 1));
+}
+function updateUsageDisplay() {
+  const used = getScansUsed();
+  const el = document.getElementById('scanUsage');
+  if (!el) return;
+  const email = getUser();
+  if (!email) { el.textContent = 'Sign in to scan. Free tier: 1 scan/month.'; return; }
+  if (used >= 1) {
+    el.innerHTML = `${used}/1 free scans used this month. <a href="#pricing" style="color:var(--accent-blue)">Upgrade for more.</a>`;
+  } else {
+    el.textContent = `${used}/1 free scans used this month.`;
+  }
+}
+updateUsageDisplay();
+
+/* ─── LIVE SCANNER ─── */
+async function runScan() {
+  requireAuth(async function() {
+    const btn = document.getElementById('scanBtn');
+    const errEl = document.getElementById('scanError');
+    const resultEl = document.getElementById('scanResult');
+    const scanType = document.getElementById('scanType').value;
+    const target = document.getElementById('scanTarget').value.trim();
+
+    errEl.classList.remove('visible');
+    resultEl.classList.remove('visible');
+
+    if (!target) {
+      errEl.textContent = 'Please describe what you want to scan.';
+      errEl.classList.add('visible');
+      return;
+    }
+
+    // Check local usage
+    if (getScansUsed() >= 1 && !getUser().endsWith('+pro@')) {
+      errEl.innerHTML = 'Free scan limit reached this month. <a href="#pricing" style="color:var(--accent-blue)">Upgrade your plan</a> for more scans.';
+      errEl.classList.add('visible');
+      return;
+    }
+
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+      const resp = await fetch(`${PROMETHEUS_API}/api/security/scan`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          type: scanType,
+          target: target,
+          email: getUser(),
+        }),
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        if (resp.status === 429) {
+          errEl.innerHTML = data.error + ' <a href="#pricing" style="color:var(--accent-blue)">Upgrade</a>';
+        } else {
+          errEl.textContent = data.error || 'Scan failed. Please try again.';
+        }
+        errEl.classList.add('visible');
+        return;
+      }
+
+      incrementScans();
+      updateUsageDisplay();
+      renderReport(data);
+    } catch (e) {
+      errEl.textContent = 'Could not reach Prometheus. The brain may be offline. Try again later.';
+      errEl.classList.add('visible');
+    } finally {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  });
+}
+
+function renderReport(data) {
+  const resultEl = document.getElementById('scanResult');
+  const report = data.report;
+  const sev = report.severity || 'MEDIUM';
+
+  let sectionsHtml = '';
+  for (const sec of (report.sections || [])) {
+    sectionsHtml += `
+      <div class="scan-section" onclick="this.classList.toggle('open')">
+        <div class="scan-section-title">${escapeHtml(sec.title)}</div>
+        <div class="scan-section-body">${escapeHtml(typeof sec.content === 'string' ? sec.content : sec.content.join('\\n'))}</div>
+      </div>`;
+  }
+
+  resultEl.innerHTML = `
+    <div class="scan-report">
+      <div class="scan-header">
+        <h4>${escapeHtml(data.type)}</h4>
+        <span class="severity-badge ${sev}">${sev}</span>
+      </div>
+      ${sectionsHtml}
+      <div class="scan-disclaimer">${escapeHtml(data.disclaimer)} | ${data.knowledge_sources} knowledge sources used.</div>
+    </div>`;
+  resultEl.classList.add('visible');
+  resultEl.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 </script>
 </body>
