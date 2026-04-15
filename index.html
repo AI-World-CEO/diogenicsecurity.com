@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 /* ─── CSS CUSTOM PROPERTIES ─── */
 :root {
@@ -1584,6 +1585,170 @@ ul { list-style: none; }
 .auth-submit:hover { background: #2563eb; }
 .auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 .auth-error { color: var(--accent-red); font-size: 13px; margin-top: 8px; display: none; }
+
+/* ─── SCAN SPINNER / LOADING ─── */
+@keyframes scan-spin {
+  to { transform: rotate(360deg); }
+}
+.scan-spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--border-light);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: scan-spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+.scan-loading-wrap {
+  text-align: center;
+  padding: 48px 20px;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.scan-loading-wrap p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: 8px;
+}
+.scan-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+.scan-empty-state .empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+.scan-empty-state h4 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.scan-empty-badges {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px;
+}
+.scan-empty-badges span {
+  padding: 4px 12px; border-radius: 20px; font-size: 12px;
+  background: var(--accent-blue-dim); color: var(--accent-blue);
+}
+
+/* ─── SCAN TEMPLATES ─── */
+.scan-templates {
+  display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0;
+}
+.scan-template-btn {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-radius: 20px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-body);
+}
+.scan-template-btn:hover {
+  background: var(--accent-blue-dim);
+  color: var(--accent-blue);
+  border-color: rgba(59,130,246,0.3);
+}
+
+/* ─── SECURITY SCORE RING ─── */
+.score-ring-wrap {
+  display: flex; align-items: center; gap: 20px; padding: 20px; border-bottom: 1px solid var(--border);
+}
+.score-ring-wrap svg { flex-shrink: 0; }
+.score-ring-info h3 { font-family: var(--font-display); font-size: 22px; margin-bottom: 4px; }
+.score-ring-info p { font-size: 13px; color: var(--text-secondary); }
+
+/* ─── COMPLIANCE BADGES ─── */
+.compliance-section { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.compliance-section h5 {
+  font-family: var(--font-display); font-size: 14px; margin-bottom: 12px; color: var(--text-primary);
+}
+.compliance-item { margin-bottom: 12px; }
+.compliance-item:last-child { margin-bottom: 0; }
+.compliance-item-header {
+  display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;
+}
+.compliance-item-header .fw-name { color: var(--text-primary); font-weight: 600; }
+.compliance-item-header .fw-pct { color: var(--accent-blue); }
+.compliance-bar {
+  height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden;
+}
+.compliance-bar-fill {
+  height: 100%; border-radius: 3px; transition: width 0.6s ease;
+}
+.compliance-controls { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ─── SCAN HISTORY ─── */
+.scan-history-section { margin-top: 32px; }
+.scan-history-section h4 {
+  font-family: var(--font-display); font-size: 18px; margin-bottom: 16px; color: var(--text-primary);
+}
+.scan-history-list { display: flex; flex-direction: column; gap: 8px; }
+.scan-history-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: var(--bg-code); border: 1px solid var(--border);
+  border-radius: var(--radius); cursor: pointer; transition: border-color 0.2s;
+}
+.scan-history-item:hover { border-color: var(--accent-blue); }
+.scan-history-meta { display: flex; flex-direction: column; gap: 2px; }
+.scan-history-meta .sh-type { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.scan-history-meta .sh-target { font-size: 12px; color: var(--text-muted); max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scan-history-right { display: flex; align-items: center; gap: 12px; }
+.scan-history-right .sh-score { font-family: var(--font-mono); font-size: 14px; font-weight: 600; }
+.scan-history-right .sh-date { font-size: 11px; color: var(--text-muted); }
+
+/* ─── PDF BUTTON ─── */
+.pdf-download-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; margin: 16px 0 0;
+  background: var(--accent-blue); color: #fff; font-weight: 600; font-size: 14px;
+  border-radius: var(--radius); transition: background 0.2s; cursor: pointer;
+  font-family: var(--font-body); border: none;
+}
+.pdf-download-btn:hover { background: #2563eb; }
+
+/* ─── COMPARISON ─── */
+.compare-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; margin: 12px 0 0;
+  background: var(--bg-tertiary); border: 1px solid var(--border);
+  color: var(--text-secondary); font-size: 13px; border-radius: var(--radius);
+  cursor: pointer; transition: all 0.2s; font-family: var(--font-body);
+}
+.compare-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+.comparison-panel {
+  margin-top: 16px; padding: 20px; background: var(--bg-code);
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+.comparison-panel h5 {
+  font-family: var(--font-display); font-size: 16px; margin-bottom: 16px;
+}
+.comparison-row {
+  display: flex; justify-content: space-between; padding: 8px 0;
+  border-bottom: 1px solid var(--border); font-size: 14px;
+}
+.comparison-row:last-child { border-bottom: none; }
+.comparison-row .label { color: var(--text-secondary); }
+.comparison-row .val-up { color: var(--accent); }
+.comparison-row .val-down { color: var(--accent-red); }
+.comparison-row .val-same { color: var(--text-muted); }
+
+/* ─── ANON SIGNUP PROMPT ─── */
+.anon-signup-prompt {
+  margin-top: 16px; padding: 16px 20px;
+  background: var(--accent-blue-dim); border: 1px solid rgba(59,130,246,0.25);
+  border-radius: var(--radius); text-align: center;
+}
+.anon-signup-prompt p { font-size: 14px; color: var(--text-secondary); margin-bottom: 10px; }
+.anon-signup-prompt button {
+  padding: 8px 20px; background: var(--accent-blue); color: #fff;
+  font-weight: 600; font-size: 14px; border-radius: var(--radius);
+  border: none; cursor: pointer; font-family: var(--font-body);
+}
 </style>
 </head>
 <body>
@@ -1724,6 +1889,16 @@ ul { list-style: none; }
         <option value="policy">Security Policy Template</option>
       </select>
       <textarea class="scanner-textarea" id="scanTarget" placeholder="Describe what you want to scan...&#10;&#10;Example: 'Our SaaS platform handles healthcare data (HIPAA). We run on AWS with 3 microservices, PostgreSQL, and a React frontend. 12 employees, no dedicated security team.'"></textarea>
+      <div class="scan-templates">
+        <button class="scan-template-btn" onclick="fillTemplate('E-commerce platform on AWS. React frontend, Node.js API, PostgreSQL. Handles credit card payments via Stripe. 50k monthly users.')">E-commerce AWS</button>
+        <button class="scan-template-btn" onclick="fillTemplate('Healthcare SaaS handling PHI/ePHI under HIPAA. AWS infrastructure with encrypted RDS, S3 storage, and ECS containers. 20 employees.')">Healthcare HIPAA</button>
+        <button class="scan-template-btn" onclick="fillTemplate('Financial trading platform processing wire transfers and ACH. PCI DSS scope. Microservices on Kubernetes, Redis cache, PostgreSQL.')">Financial Platform</button>
+        <button class="scan-template-btn" onclick="fillTemplate('Small business network: 15 Windows workstations, 1 on-prem server, Ubiquiti firewall, Office 365, no dedicated IT staff.')">Small Business</button>
+        <button class="scan-template-btn" onclick="fillTemplate('Multi-tenant SaaS API serving 200+ B2B customers. Django REST framework, Celery workers, AWS Lambda, API key auth, rate limiting.')">SaaS API</button>
+        <button class="scan-template-btn" onclick="fillTemplate('iOS and Android mobile app with Firebase backend. User authentication, push notifications, in-app purchases, offline data sync.')">Mobile App</button>
+        <button class="scan-template-btn" onclick="fillTemplate('WordPress site on shared hosting with WooCommerce, 12 plugins, contact forms, user registration, and admin panel exposed.')">WordPress</button>
+        <button class="scan-template-btn" onclick="fillTemplate('Internal corporate intranet: SharePoint, Active Directory, VPN access, internal wikis, HR portal with employee PII.')">Internal Intranet</button>
+      </div>
       <button class="scanner-btn" id="scanBtn" onclick="runScan()">
         <span class="btn-text">Run Security Scan</span>
         <span class="spinner"></span>
@@ -1731,6 +1906,10 @@ ul { list-style: none; }
       <div class="scanner-usage" id="scanUsage"></div>
       <div class="scan-error" id="scanError"></div>
       <div class="scanner-result" id="scanResult"></div>
+    </div>
+    <div class="scan-history-section" id="scanHistorySection" style="display:none;">
+      <h4>Previous Scans</h4>
+      <div class="scan-history-list" id="scanHistoryList"></div>
     </div>
   </div>
 </section>
@@ -3496,7 +3675,14 @@ function updateUsageDisplay() {
   const el = document.getElementById('scanUsage');
   if (!el) return;
   const email = getUser();
-  if (!email) { el.textContent = 'Sign in to scan. Free tier: 1 scan/month.'; return; }
+  if (!email) {
+    if (canScanAnonymously()) {
+      el.textContent = 'Try 1 free scan without signing up, or sign in for more.';
+    } else {
+      el.textContent = 'Sign in to scan. Free tier: 1 scan/month.';
+    }
+    return;
+  }
   if (used >= 1) {
     el.innerHTML = `${used}/1 free scans used this month. <a href="#pricing" style="color:var(--accent-blue)">Upgrade for more.</a>`;
   } else {
@@ -3505,74 +3691,270 @@ function updateUsageDisplay() {
 }
 updateUsageDisplay();
 
-/* ─── LIVE SCANNER ─── */
-async function runScan() {
-  requireAuth(async function() {
-    const btn = document.getElementById('scanBtn');
-    const errEl = document.getElementById('scanError');
-    const resultEl = document.getElementById('scanResult');
-    const scanType = document.getElementById('scanType').value;
-    const target = document.getElementById('scanTarget').value.trim();
-
-    errEl.classList.remove('visible');
-    resultEl.classList.remove('visible');
-
-    if (!target) {
-      errEl.textContent = 'Please describe what you want to scan.';
-      errEl.classList.add('visible');
-      return;
-    }
-
-    // Check local usage
-    if (getScansUsed() >= 1 && !getUser().endsWith('+pro@')) {
-      errEl.innerHTML = 'Free scan limit reached this month. <a href="#pricing" style="color:var(--accent-blue)">Upgrade your plan</a> for more scans.';
-      errEl.classList.add('visible');
-      return;
-    }
-
-    btn.classList.add('loading');
-    btn.disabled = true;
-
-    try {
-      const resp = await fetch(`${PROMETHEUS_API}/api/security/scan`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          type: scanType,
-          target: target,
-          email: getUser(),
-        }),
-      });
-
-      const data = await resp.json();
-
-      if (!resp.ok) {
-        if (resp.status === 429) {
-          errEl.innerHTML = data.error + ' <a href="#pricing" style="color:var(--accent-blue)">Upgrade</a>';
-        } else {
-          errEl.textContent = data.error || 'Scan failed. Please try again.';
-        }
-        errEl.classList.add('visible');
-        return;
-      }
-
-      incrementScans();
-      updateUsageDisplay();
-      renderReport(data);
-    } catch (e) {
-      errEl.textContent = 'Could not reach Prometheus. The brain may be offline. Try again later.';
-      errEl.classList.add('visible');
-    } finally {
-      btn.classList.remove('loading');
-      btn.disabled = false;
-    }
-  });
+/* ─── ANONYMOUS SCAN (UPGRADE 23) ─── */
+function canScanAnonymously() {
+  return parseInt(localStorage.getItem('anon_scans') || '0') < 1;
+}
+function bumpAnonScan() {
+  localStorage.setItem('anon_scans', String(parseInt(localStorage.getItem('anon_scans') || '0') + 1));
 }
 
+/* ─── EMPTY STATE + LOADING (UPGRADE 24) ─── */
+function showEmptyState() {
+  const resultEl = document.getElementById('scanResult');
+  resultEl.innerHTML = `
+    <div class="scan-empty-state">
+      <div class="empty-icon">&#128737;</div>
+      <h4>Ready to Analyze</h4>
+      <p>Describe your infrastructure, select a scan type, and let Prometheus evaluate your security posture.</p>
+      <div class="scan-empty-badges">
+        <span>NIST</span><span>CIS</span><span>ISO 27001</span><span>HIPAA</span><span>PCI DSS</span><span>GDPR</span><span>Zero Trust</span><span>CVSS</span>
+      </div>
+    </div>`;
+  resultEl.classList.add('visible');
+}
+
+function showScanLoading() {
+  const resultEl = document.getElementById('scanResult');
+  const messages = [
+    'Analyzing infrastructure description...',
+    'Cross-referencing NIST frameworks...',
+    'Evaluating CIS benchmarks...',
+    'Checking compliance requirements...',
+    'Scanning for vulnerabilities...',
+    'Generating security recommendations...',
+    'Compiling final report...'
+  ];
+  let idx = 0;
+  resultEl.innerHTML = `
+    <div class="scan-loading-wrap">
+      <div class="scan-spinner"></div>
+      <p id="scanLoadingMsg">${messages[0]}</p>
+    </div>`;
+  resultEl.classList.add('visible');
+  window._scanLoadingInterval = setInterval(function() {
+    idx = (idx + 1) % messages.length;
+    const msgEl = document.getElementById('scanLoadingMsg');
+    if (msgEl) msgEl.textContent = messages[idx];
+  }, 2500);
+}
+
+function stopScanLoading() {
+  if (window._scanLoadingInterval) {
+    clearInterval(window._scanLoadingInterval);
+    window._scanLoadingInterval = null;
+  }
+}
+
+/* ─── QUICK SCAN TEMPLATES (UPGRADE 19) ─── */
+function fillTemplate(text) {
+  document.getElementById('scanTarget').value = text;
+  document.getElementById('scanTarget').focus();
+}
+
+/* ─── SCAN HISTORY (UPGRADE 17) ─── */
+function getScanHistory() {
+  try { return JSON.parse(localStorage.getItem('ds_scan_history') || '[]'); }
+  catch(e) { return []; }
+}
+function saveScanResult(scanType, target, result, score) {
+  const history = getScanHistory();
+  history.unshift({
+    id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+    type: scanType,
+    target: target,
+    result: result,
+    score: score || 0,
+    date: new Date().toISOString()
+  });
+  if (history.length > 50) history.length = 50;
+  localStorage.setItem('ds_scan_history', JSON.stringify(history));
+}
+function renderScanHistory() {
+  const history = getScanHistory();
+  const section = document.getElementById('scanHistorySection');
+  const list = document.getElementById('scanHistoryList');
+  if (!section || !list) return;
+  if (history.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = history.slice(0, 10).map(function(item) {
+    const d = new Date(item.date);
+    const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const scoreColor = item.score >= 80 ? 'var(--accent)' : item.score >= 60 ? 'var(--accent-amber)' : 'var(--accent-red)';
+    return `<div class="scan-history-item" onclick="viewScan('${escapeHtml(item.id)}')">
+      <div class="scan-history-meta">
+        <span class="sh-type">${escapeHtml(item.type)}</span>
+        <span class="sh-target">${escapeHtml(item.target.substring(0, 80))}</span>
+      </div>
+      <div class="scan-history-right">
+        <span class="sh-score" style="color:${scoreColor}">${item.score}/100</span>
+        <span class="sh-date">${escapeHtml(dateStr)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function viewScan(scanId) {
+  const history = getScanHistory();
+  const item = history.find(function(h) { return h.id === scanId; });
+  if (!item || !item.result) return;
+  lastScanResult = item.result;
+  renderReport(item.result);
+}
+
+/* ─── GLOBAL STATE FOR PDF ─── */
+var lastScanResult = null;
+
+/* ─── LIVE SCANNER (UPGRADED) ─── */
+async function runScan() {
+  const isAnon = !getUser();
+  if (isAnon && !canScanAnonymously()) {
+    requireAuth(function() { runScan(); });
+    return;
+  }
+  if (!isAnon) {
+    // Authenticated path — proceed directly
+  }
+
+  const btn = document.getElementById('scanBtn');
+  const errEl = document.getElementById('scanError');
+  const resultEl = document.getElementById('scanResult');
+  const scanType = document.getElementById('scanType').value;
+  const target = document.getElementById('scanTarget').value.trim();
+
+  errEl.classList.remove('visible');
+  resultEl.classList.remove('visible');
+
+  if (!target) {
+    errEl.textContent = 'Please describe what you want to scan.';
+    errEl.classList.add('visible');
+    return;
+  }
+
+  // Check local usage for authenticated users
+  if (!isAnon && getScansUsed() >= 1 && !getUser().endsWith('+pro@')) {
+    errEl.innerHTML = 'Free scan limit reached this month. <a href="#pricing" style="color:var(--accent-blue)">Upgrade your plan</a> for more scans.';
+    errEl.classList.add('visible');
+    return;
+  }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+  showScanLoading();
+
+  const emailToUse = isAnon ? 'anonymous@preview.diogenicsecurity.com' : getUser();
+
+  try {
+    const resp = await fetch(`${PROMETHEUS_API}/api/security/scan`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        type: scanType,
+        target: target,
+        email: emailToUse,
+      }),
+    });
+
+    const data = await resp.json();
+    stopScanLoading();
+
+    if (!resp.ok) {
+      if (resp.status === 429) {
+        errEl.innerHTML = data.error + ' <a href="#pricing" style="color:var(--accent-blue)">Upgrade</a>';
+      } else {
+        errEl.textContent = data.error || 'Scan failed. Please try again.';
+      }
+      errEl.classList.add('visible');
+      resultEl.classList.remove('visible');
+      return;
+    }
+
+    if (isAnon) {
+      bumpAnonScan();
+    } else {
+      incrementScans();
+    }
+    updateUsageDisplay();
+
+    lastScanResult = data;
+    const score = data.security_score || (data.report && data.report.security_score) || 0;
+    saveScanResult(scanType, target, data, score);
+    renderReport(data);
+    renderScanHistory();
+
+    // Show compare button
+    showCompareButton(data, scanType);
+
+    // Soft signup prompt for anonymous users
+    if (isAnon) {
+      const resultContainer = document.getElementById('scanResult');
+      const promptDiv = document.createElement('div');
+      promptDiv.className = 'anon-signup-prompt';
+      promptDiv.innerHTML = '<p>Sign up free to save your reports, track history, and get 1 scan/month.</p><button onclick="requireAuth(function(){updateUsageDisplay();renderScanHistory()})">Create Free Account</button>';
+      resultContainer.appendChild(promptDiv);
+    }
+  } catch (e) {
+    stopScanLoading();
+    errEl.textContent = 'Could not reach Prometheus. The brain may be offline. Try again later.';
+    errEl.classList.add('visible');
+    resultEl.classList.remove('visible');
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+/* ─── RENDER REPORT (UPGRADED) ─── */
 function renderReport(data) {
   const resultEl = document.getElementById('scanResult');
   const report = data.report;
   const sev = report.severity || 'MEDIUM';
+  const score = data.security_score || report.security_score || 0;
+
+  // Security score ring (UPGRADE 20)
+  const scoreColor = score >= 80 ? '#00d4aa' : score >= 60 ? '#f0b429' : '#ef4444';
+  const circumference = 2 * Math.PI * 54;
+  const dashOffset = circumference - (circumference * score / 100);
+  const scoreLabel = score >= 80 ? 'Strong' : score >= 60 ? 'Moderate' : 'Needs Attention';
+  const scoreRingHtml = `
+    <div class="score-ring-wrap">
+      <svg width="130" height="130" viewBox="0 0 130 130">
+        <circle cx="65" cy="65" r="54" fill="none" stroke="${scoreColor}22" stroke-width="8"/>
+        <circle cx="65" cy="65" r="54" fill="none" stroke="${scoreColor}" stroke-width="8"
+          stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+          stroke-linecap="round" transform="rotate(-90 65 65)" style="transition:stroke-dashoffset 1s ease"/>
+        <text x="65" y="60" text-anchor="middle" fill="${scoreColor}" font-size="28" font-weight="700" font-family="Space Grotesk,sans-serif">${score}</text>
+        <text x="65" y="78" text-anchor="middle" fill="#8888A0" font-size="11" font-family="Inter,sans-serif">/100</text>
+      </svg>
+      <div class="score-ring-info">
+        <h3 style="color:${scoreColor}">${escapeHtml(scoreLabel)}</h3>
+        <p>Security posture score based on ${escapeHtml(String(data.knowledge_sources || 0))} knowledge sources across NIST, CIS, and ISO frameworks.</p>
+      </div>
+    </div>`;
+
+  // Compliance badges (UPGRADE 21)
+  let complianceHtml = '';
+  const cm = report.compliance_metrics;
+  if (cm && typeof cm === 'object') {
+    let badgesInner = '';
+    for (const fw of Object.keys(cm)) {
+      const metric = cm[fw];
+      const pct = typeof metric === 'number' ? metric : (metric.percentage || metric.score || 0);
+      const controls = metric.addressed !== undefined ? `${metric.addressed}/${metric.total} controls addressed` : '';
+      const barColor = pct >= 80 ? 'var(--accent)' : pct >= 60 ? 'var(--accent-amber)' : 'var(--accent-red)';
+      badgesInner += `
+        <div class="compliance-item">
+          <div class="compliance-item-header">
+            <span class="fw-name">${escapeHtml(fw)}</span>
+            <span class="fw-pct">${Math.round(pct)}%</span>
+          </div>
+          <div class="compliance-bar"><div class="compliance-bar-fill" style="width:${Math.min(pct,100)}%;background:${barColor}"></div></div>
+          ${controls ? '<div class="compliance-controls">' + escapeHtml(controls) + '</div>' : ''}
+        </div>`;
+    }
+    if (badgesInner) {
+      complianceHtml = `<div class="compliance-section"><h5>Compliance Coverage</h5>${badgesInner}</div>`;
+    }
+  }
 
   let sectionsHtml = '';
   for (const sec of (report.sections || [])) {
@@ -3585,15 +3967,169 @@ function renderReport(data) {
 
   resultEl.innerHTML = `
     <div class="scan-report">
+      ${scoreRingHtml}
       <div class="scan-header">
         <h4>${escapeHtml(data.type)}</h4>
         <span class="severity-badge ${sev}">${sev}</span>
       </div>
+      ${complianceHtml}
       ${sectionsHtml}
-      <div class="scan-disclaimer">${escapeHtml(data.disclaimer)} | ${data.knowledge_sources} knowledge sources used.</div>
-    </div>`;
+      <div class="scan-disclaimer">${escapeHtml(data.disclaimer || '')} | ${data.knowledge_sources || 0} knowledge sources used.</div>
+    </div>
+    <button class="pdf-download-btn" onclick="downloadPDF()">&#128196; Download PDF Report</button>
+    <div id="compareContainer"></div>`;
   resultEl.classList.add('visible');
   resultEl.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+}
+
+/* ─── PDF REPORT DOWNLOAD (UPGRADE 18) ─── */
+function downloadPDF() {
+  if (!lastScanResult) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  const margin = 20;
+  const maxW = pw - margin * 2;
+  let y = 20;
+  const data = lastScanResult;
+  const report = data.report;
+  const score = data.security_score || report.security_score || 0;
+
+  function addFooter(pg) {
+    doc.setFontSize(8);
+    doc.setTextColor(140);
+    doc.text('Diogenesis Security — AI-generated report. Not a substitute for professional security assessment.', margin, ph - 10);
+    doc.text('Page ' + pg, pw - margin, ph - 10, { align: 'right' });
+  }
+  function checkPage() {
+    if (y > ph - 30) {
+      addFooter(doc.getNumberOfPages());
+      doc.addPage();
+      y = 20;
+    }
+  }
+
+  // Header
+  doc.setFillColor(13, 13, 20);
+  doc.rect(0, 0, pw, 40, 'F');
+  doc.setFontSize(20);
+  doc.setTextColor(232, 232, 240);
+  doc.text('Diogenesis Security', margin, 18);
+  doc.setFontSize(11);
+  doc.setTextColor(136, 136, 160);
+  doc.text('Security Assessment Report', margin, 26);
+  doc.text(new Date().toLocaleDateString(), pw - margin, 26, { align: 'right' });
+
+  y = 50;
+
+  // Score
+  doc.setFontSize(14);
+  doc.setTextColor(60, 60, 80);
+  doc.text('Security Score:', margin, y);
+  const scoreClr = score >= 80 ? [0, 212, 170] : score >= 60 ? [240, 180, 41] : [239, 68, 68];
+  doc.setTextColor(scoreClr[0], scoreClr[1], scoreClr[2]);
+  doc.setFontSize(28);
+  doc.text(String(score) + '/100', margin + 48, y + 1);
+  y += 14;
+
+  // Scan info
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.text('Scan Type: ' + (data.type || ''), margin, y); y += 6;
+  const targetLines = doc.splitTextToSize('Target: ' + (data.target || ''), maxW);
+  doc.text(targetLines, margin, y); y += targetLines.length * 5 + 4;
+  doc.text('Severity: ' + (report.severity || 'MEDIUM'), margin, y); y += 10;
+
+  // Sections
+  for (const sec of (report.sections || [])) {
+    checkPage();
+    doc.setFontSize(12);
+    doc.setTextColor(37, 99, 235);
+    doc.text(sec.title || '', margin, y); y += 7;
+    doc.setFontSize(9);
+    doc.setTextColor(80);
+    const content = typeof sec.content === 'string' ? sec.content : sec.content.join('\n');
+    const lines = doc.splitTextToSize(content, maxW);
+    for (let i = 0; i < lines.length; i++) {
+      checkPage();
+      doc.text(lines[i], margin, y); y += 4.5;
+    }
+    y += 6;
+  }
+
+  // Recommendations
+  if (report.recommendations && report.recommendations.length > 0) {
+    checkPage();
+    doc.setFontSize(12);
+    doc.setTextColor(37, 99, 235);
+    doc.text('Recommendations', margin, y); y += 7;
+    doc.setFontSize(9);
+    doc.setTextColor(80);
+    for (const rec of report.recommendations) {
+      checkPage();
+      const recLines = doc.splitTextToSize('• ' + rec, maxW);
+      doc.text(recLines, margin, y); y += recLines.length * 4.5 + 2;
+    }
+  }
+
+  addFooter(doc.getNumberOfPages());
+  doc.save('diogenesis-security-report-' + Date.now() + '.pdf');
+}
+
+/* ─── SCAN COMPARISON (UPGRADE 22) ─── */
+function showCompareButton(currentResult, scanType) {
+  const container = document.getElementById('compareContainer');
+  if (!container) return;
+  const history = getScanHistory();
+  // Find a previous scan of the same type (skip the one we just added = index 0)
+  const prev = history.find(function(h, i) { return i > 0 && h.type === scanType && h.result; });
+  if (!prev) { container.innerHTML = ''; return; }
+  container.innerHTML = '<button class="compare-btn" onclick="showComparison()">&#8596; Compare with previous ' + escapeHtml(scanType) + ' scan</button><div id="comparisonPanel"></div>';
+}
+
+function showComparison() {
+  const panel = document.getElementById('comparisonPanel');
+  if (!panel || !lastScanResult) return;
+  const history = getScanHistory();
+  const currentType = lastScanResult.type;
+  const prev = history.find(function(h, i) { return i > 0 && h.type === currentType && h.result; });
+  if (!prev) return;
+
+  const curScore = lastScanResult.security_score || (lastScanResult.report && lastScanResult.report.security_score) || 0;
+  const prevScore = prev.score || 0;
+  const delta = curScore - prevScore;
+  const deltaClass = delta > 0 ? 'val-up' : delta < 0 ? 'val-down' : 'val-same';
+  const deltaStr = delta > 0 ? '+' + delta : String(delta);
+
+  const curSev = (lastScanResult.report && lastScanResult.report.severity) || 'MEDIUM';
+  const prevSev = (prev.result && prev.result.report && prev.result.report.severity) || 'MEDIUM';
+
+  const curSections = (lastScanResult.report && lastScanResult.report.sections) || [];
+  const prevSections = (prev.result && prev.result.report && prev.result.report.sections) || [];
+  const curTitles = new Set(curSections.map(function(s) { return s.title; }));
+  const prevTitles = new Set(prevSections.map(function(s) { return s.title; }));
+  const newIssues = [];
+  const resolved = [];
+  curTitles.forEach(function(t) { if (!prevTitles.has(t)) newIssues.push(t); });
+  prevTitles.forEach(function(t) { if (!curTitles.has(t)) resolved.push(t); });
+
+  const prevDate = new Date(prev.date).toLocaleDateString();
+
+  let html = `<div class="comparison-panel">
+    <h5>Comparison with scan from ${escapeHtml(prevDate)}</h5>
+    <div class="comparison-row"><span class="label">Score Change</span><span class="${deltaClass}">${curScore} (${deltaStr})</span></div>
+    <div class="comparison-row"><span class="label">Previous Score</span><span style="color:var(--text-muted)">${prevScore}/100</span></div>
+    <div class="comparison-row"><span class="label">Severity</span><span style="color:var(--text-secondary)">${escapeHtml(prevSev)} &rarr; ${escapeHtml(curSev)}</span></div>`;
+
+  if (resolved.length > 0) {
+    html += '<div class="comparison-row"><span class="label">Resolved</span><span class="val-up">' + resolved.map(function(t) { return escapeHtml(t); }).join(', ') + '</span></div>';
+  }
+  if (newIssues.length > 0) {
+    html += '<div class="comparison-row"><span class="label">New Issues</span><span class="val-down">' + newIssues.map(function(t) { return escapeHtml(t); }).join(', ') + '</span></div>';
+  }
+  html += '</div>';
+  panel.innerHTML = html;
 }
 
 function escapeHtml(str) {
@@ -3601,6 +4137,12 @@ function escapeHtml(str) {
   div.textContent = str;
   return div.innerHTML;
 }
+
+/* ─── INIT ON LOAD ─── */
+(function() {
+  showEmptyState();
+  renderScanHistory();
+})();
 </script>
 </body>
 </html>
