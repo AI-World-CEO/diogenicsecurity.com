@@ -3612,6 +3612,15 @@ function toggleCap(btn) {
 
 /* ─── PROMETHEUS API + STRIPE ─── */
 const PROMETHEUS_API = 'https://desktop-madeac6.taild7a11c.ts.net';
+
+async function generateAPIToken() {
+  const secret = 'dg-prod-f6d9c6824ea8669f1c070ee9bf681f38';
+  const hourKey = Math.floor(Date.now() / 1000 / 3600);
+  const data = new TextEncoder().encode(secret + ':' + hourKey);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
+}
+
 const STRIPE_LINKS = {
   sec_pro: 'https://buy.stripe.com/test_3cI3cx0JU4Iq3WMaRpb3q02',
   sec_biz: 'https://buy.stripe.com/test_3cI3cx0JU4Iq3WMaRpb3q02',
@@ -3844,9 +3853,10 @@ async function runScan() {
   const emailToUse = isAnon ? 'anonymous@preview.diogenicsecurity.com' : getUser();
 
   try {
+    const apiToken = await generateAPIToken();
     const resp = await fetch(`${PROMETHEUS_API}/api/security/scan`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'X-API-Token': apiToken},
       body: JSON.stringify({
         type: scanType,
         target: target,
