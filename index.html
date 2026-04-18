@@ -12,6 +12,7 @@
 <meta property="og:url" content="https://diogenicsecurity.com">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://diogenicsecurity.com">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='none' stroke='%2300d4aa' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%2300d4aa' opacity='0.3'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%2300d4aa'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1756,7 +1757,7 @@ ul { list-style: none; }
 <!-- ════════════ NAVIGATION ════════════ -->
 <nav class="nav" id="nav">
   <div class="container">
-    <button class="nav-logo" onclick="openAboutModal()" aria-label="About Diogenesis">
+    <button class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">
       <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
         <circle cx="16" cy="16" r="14" stroke="#00d4aa" stroke-width="2"/>
         <circle cx="16" cy="16" r="6" fill="#00d4aa" opacity="0.3"/>
@@ -1770,7 +1771,7 @@ ul { list-style: none; }
       </svg>
       <span class="logo-text">
         <span class="logo-title">Diogenesis</span>
-        <span class="about-hint">What is Diogenesis?</span>
+        <span class="about-hint">Back to top</span>
       </span>
     </button>
     <div class="nav-links">
@@ -2116,7 +2117,7 @@ ul { list-style: none; }
       </div>
     </div>
     <div class="agent-callout reveal">
-      Every agent uses the same biological architecture: patrol like an immune cell, detect anomalies through coherence monitoring, investigate with hypothesis-driven reasoning, predict problems before they happen, and share learning across the swarm. Born from <strong>Prometheus Prime</strong> — a self-improving AI running 24/7 since February 2025, currently at <strong>94,000+ cycles</strong> with <strong>26 autonomous agents</strong> (6 of which self-organized without being programmed).
+      Every agent uses the same biological architecture: patrol like an immune cell, detect anomalies through coherence monitoring, investigate with hypothesis-driven reasoning, predict problems before they happen, and share learning across the swarm. Born from <strong>Prometheus Prime</strong> — a self-improving AI running 24/7 since February 2025, currently at <strong>146,000+ cycles</strong> with <strong>58 autonomous agents</strong> (6 of which self-organized without being programmed).
     </div>
   </div>
 </section>
@@ -2495,68 +2496,11 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
       </div>
     </div>
 
-    <!-- PRICING TIERS (grandma-friendly) -->
-    <div class="reveal" style="text-align:center;margin-top:72px;">
-      <p class="section-label" style="color:#9dc8ff;">Fortress pricing</p>
-      <h2 class="section-title" style="font-size:28px;">Free works forever. We never disable your protection.</h2>
-    </div>
-    <div class="pricing-grid reveal" style="margin-top:32px;">
-      <!-- FREE -->
-      <div class="price-card">
-        <span class="price-badge free">Free Forever</span>
-        <h3>Free</h3>
-        <div class="price-amount">$0</div>
-        <p class="price-sublabel">Never expires. No credit card.</p>
-        <p class="price-desc">Basic protection. Stops ransomware. Watches your files. Always free.</p>
-        <ul class="price-features">
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Watches your files for changes</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Watches your programs for threats</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Stops ransomware in 3 seconds</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Security dashboard in your browser</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Shield icon by your clock</li>
-        </ul>
-        <a href="https://github.com/AI-World-CEO/diogenesis-fortress/releases" class="price-btn" style="min-height:44px;display:inline-flex;align-items:center;justify-content:center;">Download Free</a>
-      </div>
-      <!-- PRO -->
-      <div class="price-card featured-pro">
-        <span class="popular-badge">Most Popular</span>
-        <span class="price-badge pro">Pro</span>
-        <h3>Pro</h3>
-        <div class="price-amount">$9.99<span>/month</span></div>
-        <p class="price-sublabel">Full protection + AI that explains threats</p>
-        <p class="price-desc">Everything. All the monitoring. AI tells you what happened in plain English. Fixes damage automatically.</p>
-        <ul class="price-features">
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Everything in Free</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Watches your internet connections</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Detects suspicious USB devices</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>AI explains threats in plain English</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Repairs damaged files automatically</li>
-        </ul>
-        <span class="price-btn primary" style="min-height:44px;display:inline-flex;align-items:center;justify-content:center;opacity:0.7;cursor:default;">Coming Soon &mdash; $9.99/mo</span>
-      </div>
-      <!-- LIFETIME -->
-      <div class="price-card">
-        <span class="price-badge pro">Lifetime</span>
-        <h3>Lifetime</h3>
-        <div class="price-amount">$299<span style="font-size:14px;"> once</span></div>
-        <p class="price-sublabel">Pay once. Protected forever.</p>
-        <p class="price-desc">All Pro features. No subscription. No renewal. One year of updates included.</p>
-        <ul class="price-features">
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>All Pro features forever</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>No monthly payments</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>One year of updates included</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
-          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Works forever even without updates</li>
-        </ul>
-        <span class="price-btn" style="min-height:44px;display:inline-flex;align-items:center;justify-content:center;opacity:0.7;cursor:default;">Coming Soon &mdash; $299</span>
-      </div>
-    </div>
-
     <!-- DOWNLOAD CTA -->
     <div class="reveal" style="text-align:center;margin-top:64px;padding:40px 24px;background:rgba(120,180,255,0.04);border:1px solid rgba(120,180,255,0.18);border-radius:16px;">
       <h3 style="margin:0 0 12px;font-size:24px;">&#128229; Download Fortress</h3>
       <p style="color:#b0bacb;margin:0 0 24px;max-width:600px;margin-left:auto;margin-right:auto;">Windows 10 or 11. 4 GB memory. 500 MB storage. No internet needed after download.</p>
-      <a href="https://github.com/AI-World-CEO/diogenesis-fortress/releases" class="price-btn primary" style="min-width:260px;min-height:52px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;">Download Free for Windows</a>
+      <a href="https://github.com/AI-World-CEO/diogenesis-fortress/releases" target="_blank" rel="noopener" class="price-btn primary" style="min-width:260px;min-height:52px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;">View Releases on GitHub</a>
     </div>
 
     <!-- PRIVACY SECTION (standalone, prominent) -->
@@ -2827,7 +2771,7 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
       <p class="feedback-text">Diogenesis is built by developers for developers. If you have issues, suggestions, or ideas — we want to hear them. Every piece of feedback shapes what we build next.</p>
       <div class="feedback-buttons">
         <a href="https://github.com/AI-World-CEO/diogenicsecurity.com/issues" class="btn-primary" target="_blank" rel="noopener">Share Feedback</a>
-        <a href="mailto:prnt3dman1@gmail.com" class="btn-secondary">Email Us</a>
+        <a href="mailto:garry@diogenic.ai" class="btn-secondary">Email Us</a>
       </div>
     </div>
   </div>
@@ -2843,12 +2787,12 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
       <a href="https://pypi.org/project/diogenesis-sdk/" target="_blank" rel="noopener">PyPI</a>
       <a href="https://github.com/AI-World-CEO/diogenicsecurity.com#readme" target="_blank" rel="noopener">Documentation</a>
       <a href="#feedback">Feedback</a>
-      <a href="mailto:garry@diogenicsecurity.com">Contact</a>
+      <a href="mailto:garry@diogenic.ai">Contact</a>
     </div>
     <div style="margin:20px 0 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
       <p style="color:#8888a0;font-size:12px;margin:0 0 8px;">Also from Diogenic AI</p>
       <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;">
-        <a href="https://diogenic.ai" style="color:#9dc8ff;font-size:13px;">&#128172; diogenic.ai &mdash; Ask 57 AI specialists anything</a>
+        <a href="https://diogenic.ai" style="color:#9dc8ff;font-size:13px;">&#128172; diogenic.ai &mdash; Ask 58 AI specialists anything</a>
       </div>
     </div>
     <p class="footer-tagline">Privacy-first security. Your data stays yours.</p>
@@ -2864,7 +2808,7 @@ agent = <span class="fn">XenobotAgent</span>(<span class="str">"custom_patrol"</
     <input class="auth-input" id="authEmail" type="email" placeholder="you@company.com" autocomplete="email">
     <label class="auth-tos">
       <input type="checkbox" id="authTos">
-      I agree to the <a href="mailto:garry@diogenicsecurity.com?subject=Terms">Terms of Service</a> and understand this is AI-generated analysis.
+      I agree to the <a href="mailto:garry@diogenic.ai?subject=Terms">Terms of Service</a> and understand this is AI-generated analysis.
     </label>
     <button class="auth-submit" id="authSubmitBtn" onclick="submitAuth()">Continue</button>
     <div class="auth-error" id="authError"></div>
@@ -3830,8 +3774,8 @@ async function generateAPIToken() {
 
 const STRIPE_LINKS = {
   sec_pro: 'https://buy.stripe.com/test_3cI3cx0JU4Iq3WMaRpb3q02',
-  sec_biz: 'https://buy.stripe.com/test_3cI3cx0JU4Iq3WMaRpb3q02',
-  sec_ent: 'https://buy.stripe.com/test_aFadRb2S2deW78YgbJb3q01',
+  sec_biz: 'https://buy.stripe.com/test_aFadRb2S2deW78YgbJb3q01',
+  sec_ent: 'mailto:garry@diogenic.ai?subject=Diogenesis%20Enterprise%20Inquiry',
 };
 
 /* ─── AUTH SYSTEM ─── */
