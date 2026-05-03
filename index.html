@@ -3781,15 +3781,13 @@ function toggleCap(btn) {
 }
 
 /* ─── PROMETHEUS API + STRIPE ─── */
+// Sprint S-0a-FU2 (2026-05-03): hardcoded API secret + generateAPIToken()
+// removed. The secret was publicly visible in client JS — providing zero
+// auth value — and the substrate's S-0b-2 fail-fast token validation will
+// reject any forged token regardless. Scanner currently calls /api/security/scan
+// without auth header; substrate-side gating is deferred to Sprint S-0b-3
+// (Warden Gate). Mirrors S-0a Action A on diogenic.ai (commit cb32329).
 const PROMETHEUS_API = 'https://desktop-madeac6.taild7a11c.ts.net';
-
-async function generateAPIToken() {
-  const secret = 'dg-prod-f6d9c6824ea8669f1c070ee9bf681f38';
-  const hourKey = Math.floor(Date.now() / 1000 / 3600);
-  const data = new TextEncoder().encode(secret + ':' + hourKey);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
-}
 
 const STRIPE_LINKS = {
   sec_pro: 'https://buy.stripe.com/test_3cI3cx0JU4Iq3WMaRpb3q02',
@@ -4023,10 +4021,9 @@ async function runScan() {
   const emailToUse = isAnon ? 'anonymous@preview.diogenicsecurity.com' : getUser();
 
   try {
-    const apiToken = await generateAPIToken();
     const resp = await fetch(`${PROMETHEUS_API}/api/security/scan`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json', 'X-API-Token': apiToken},
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         type: scanType,
         target: target,
